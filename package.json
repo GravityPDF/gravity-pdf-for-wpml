@@ -1,0 +1,13 @@
+{
+  "name": "gravity-pdf-for-wpml",
+  "private": true,
+  "dependencies": {
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-wp-pot": "^2.0.6"
+  },
+  "scripts": {}
+}

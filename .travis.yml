@@ -1,0 +1,35 @@
+language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+sudo: false
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+
+env:
+  - WP_VERSION=latest WP_MULTISITE=0
+
+matrix:
+  include:
+  - php: 7.2
+    env: WP_VERSION=latest WP_MULTISITE=1 PHPUNIT_COVERAGE_TEST=1
+
+before_script:
+  - if [[ ! $PHPUNIT_COVERAGE_TEST ]]; then phpenv config-rm xdebug.ini; fi
+  - if find . -name "*.php" -exec php -l {} \; | grep "unexpected $end"; then exit 1; fi
+  - composer install --prefer-dist --optimize-autoloader --no-scripts
+  - bash tests/bin/install.sh gravitypdf_test root '' localhost $WP_VERSION
+  - if [[ $TRAVIS_BRANCH = 'master' && $PHPUNIT_COVERAGE_TEST ]]; then bash ./bin/build-docs.sh; fi
+
+script:
+ - if [[ $PHPUNIT_COVERAGE_TEST ]]; then ./vendor/bin/phpunit --coverage-clover=coverage/php-coverage1.xml; fi
+ - if [[ ! $PHPUNIT_COVERAGE_TEST ]]; then ./vendor/bin/phpunit; fi
+
+after_success:
+ - if [[ $PHPUNIT_COVERAGE_TEST ]]; then bash <(curl -s https://codecov.io/bash); fi
