@@ -75,7 +75,7 @@ class GravityPDF_WPML_Unit_Tests_Bootstrap {
 		RGFormsModel::drop_tables();
 		( function_exists( 'gf_upgrade' ) ) ? gf_upgrade()->maybe_upgrade() : @GFForms::setup( true );
 
-		require $this->plugin_dir . '/gravity-pdf-previewer.php';
+		require $this->plugin_dir . '/gravity-pdf-for-wpml.php';
 
 		/* Setup testing logger */
 		require $this->plugin_dir . '/tmp/gravity-forms-pdf-extended/vendor/autoload.php';
