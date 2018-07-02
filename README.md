@@ -1,7 +1,5 @@
-Gravity PDF Previewer
+Gravity PDF for WPML
 ==========================
-
-![Previewer Artwork](https://resources.gravitypdf.com/uploads/edd/2017/08/cover-artwork-1.png)
 
 [![Build Status](https://travis-ci.org/GravityPDF/gravity-pdf-for-wpml.svg?branch=development)](https://travis-ci.org/GravityPDF/gravity-pdf-for-wpml) [![codecov](https://codecov.io/gh/GravityPDF/gravity-pdf-for-wpml/branch/development/graph/badge.svg)](https://codecov.io/gh/GravityPDF/gravity-pdf-for-wpml)
 
