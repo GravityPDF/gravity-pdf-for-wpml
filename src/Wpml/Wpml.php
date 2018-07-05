@@ -41,10 +41,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Wpml implements WpmlInterface {
 
-	public function hasSiteLanguage( $languageCode ) {
-		$languages = $this->getSiteLanguages();
-
-		return isset( $languages[ $languageCode ] );
+	/**
+	 * Convert the URL to its translated counterpart
+	 *
+	 * @param string $url          The URL to convert
+	 * @param string $languageCode The two-character language code
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1
+	 */
+	public function getTranslatedUrl( $url, $languageCode ) {
+		$translatedUrl = apply_filters( 'wpml_permalink', $url, $languageCode );
+		return $translatedUrl !== null ? $translatedUrl : $url;
 	}
 
 	/**
@@ -56,6 +65,21 @@ class Wpml implements WpmlInterface {
 	 */
 	public function getSiteLanguages() {
 		return apply_filters( 'wpml_active_languages', '', [ 'skip_missing' => 0, 'orderby' => 'name' ] );
+	}
+
+	/**
+	 * Check if the site has an active WPML language
+	 *
+	 * @param string $languageCode The two-character language code
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1
+	 */
+	public function hasSiteLanguage( $languageCode ) {
+		$languages = $this->getSiteLanguages();
+
+		return isset( $languages[ $languageCode ] );
 	}
 
 	/**
@@ -82,15 +106,6 @@ class Wpml implements WpmlInterface {
 		do_action( 'wpml_switch_language', null );
 	}
 
-	public function getTranslatedUrl( $url, $languageCode ) {
-		$translatedUrl = apply_filters( 'wpml_permalink', $url, $languageCode );
-		return $translatedUrl !== null ? $translatedUrl : $url;
-	}
-
-	public function hasTranslatedGravityForm( $form, $languageCode ) {
-		return $form !== $this->getTranslatedGravityForm( $form, $languageCode );
-	}
-
 	/**
 	 * Get a list of all languages the Gravity Form has been translated into
 	 *
@@ -111,6 +126,21 @@ class Wpml implements WpmlInterface {
 		}
 
 		return $gfLanguages;
+	}
+
+	/**
+	 * Check if the Gravity Form has been translated
+	 *
+	 * @param array $form         The Gravity Forms form object
+	 * @param       $languageCode The two-character language code
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1
+	 */
+	public function hasTranslatedGravityForm( $form, $languageCode ) {
+		/* @TODO - check if the form object is already translated */
+		return $form !== $this->getTranslatedGravityForm( $form, $languageCode );
 	}
 
 	/**

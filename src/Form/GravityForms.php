@@ -37,11 +37,73 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class GravityForms implements GravityFormsInterface {
 
-	public function saveLanguageCode( $entryId, $languageCode ) {
+	/**
+	 * Get a Gravity Form object
+	 *
+	 * @param int $formId The Gravity Form ID
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 */
+	public function getForm( $formId ) {
+		$gform = GPDFAPI::get_form_class();
+
+		$form = $gform->get_form( $formId );
+
+		if ( $form === null ) {
+			throw new Exception( sprintf( 'Could not find Gravity Form with ID %s', $formId ) );
+		}
+
+		return $form;
+	}
+
+	/**
+	 * Get a Gravity Form Entry object
+	 *
+	 * @param int $entryId The Gravity Form Entry ID
+	 *
+	 * @return array
+	 */
+	public function getEntry( $entryId ) {
+		$gform = GPDFAPI::get_form_class();
+		$entry = $gform->get_entry( $entryId );
+
+		if ( is_wp_error( $entry ) ) {
+			throw new Exception( $entry->get_error_message() );
+		}
+
+		return $entry;
+	}
+
+	/**
+	 * Save the language code with the entry
+	 *
+	 * @param int    $entryId      The Gravity Form Entry ID
+	 * @param string $languageCode The two-character language code
+	 *
+	 * @since 0.1
+	 */
+	public function saveEntryLanguageCode( $entryId, $languageCode ) {
 		gform_update_meta( $entryId, 'wpml_language_code', $languageCode );
 	}
 
-	public function getLanguageCode( $entryId ) {
-		return gform_get_meta( $entryId, 'wpml_language_code' );
+	/**
+	 * Get the language code from the entry
+	 *
+	 * @param $entryId The Gravity Form Entry ID
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function getEntryLanguageCode( $entryId ) {
+		$languageCode = gform_get_meta( $entryId, 'wpml_language_code' );
+
+		if ( ! is_string( $languageCode ) ) {
+			return '';
+		}
+
+		return $languageCode;
 	}
 }

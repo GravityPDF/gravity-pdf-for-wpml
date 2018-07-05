@@ -44,6 +44,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 interface WpmlInterface {
 
 	/**
+	 * Convert the URL to its translated counterpart
+	 *
+	 * @param string $url          The URL to convert
+	 * @param string $languageCode The two-character language code
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1
+	 */
+	public function getTranslatedUrl( $url, $languageCode );
+
+	/**
 	 * Return all active WPML languages
 	 *
 	 * @return array
@@ -51,6 +63,17 @@ interface WpmlInterface {
 	 * @since 0.1
 	 */
 	public function getSiteLanguages();
+
+	/**
+	 * Check if the site has an active WPML language
+	 *
+	 * @param string $languageCode The two-character language code
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1
+	 */
+	public function hasSiteLanguage( $languageCode );
 
 	/**
 	 * Dynamically set the current active language
@@ -84,9 +107,21 @@ interface WpmlInterface {
 	public function getGravityFormLanguages( $form );
 
 	/**
+	 * Check if the Gravity Form has been translated
+	 *
+	 * @param array $form         The Gravity Forms form object
+	 * @param       $languageCode The two-character language code
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1
+	 */
+	public function hasTranslatedGravityForm( $form, $languageCode );
+
+	/**
 	 * The translated Gravity Forms form object
 	 *
-	 * @param array $form     The Gravity Forms form object
+	 * @param array $form         The Gravity Forms form object
 	 * @param       $languageCode The two-character language code
 	 *
 	 * @return array

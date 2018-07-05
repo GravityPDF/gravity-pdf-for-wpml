@@ -38,30 +38,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 */
 
 /**
- * Adds support for our Toolkit header in PDF Templates.
+ * Class Header
  *
- * @package GFPDF\Plugins\DeveloperToolkit\Loader
- *
- * @since   1.0
+ * @package GFPDF\Plugins\WPML\Pdf
  */
 class Header implements Helper_Interface_Filters {
-
-	/**
-	 * @var Helper_Templates
-	 * @since 1.0
-	 */
-	protected $template;
-
-	/**
-	 * Header constructor.
-	 *
-	 * @param Helper_Templates $template
-	 *
-	 * @since 1.0
-	 */
-	public function __construct( Helper_Templates $template ) {
-		$this->template = $template;
-	}
 
 	/**
 	 * Initialise class

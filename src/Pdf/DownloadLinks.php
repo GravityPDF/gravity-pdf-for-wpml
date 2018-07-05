@@ -2,15 +2,10 @@
 
 namespace GFPDF\Plugins\WPML\Pdf;
 
-use GFPDF\Helper\Helper_Abstract_Form;
-use GFPDF\Helper\Helper_Abstract_Options;
 use GFPDF\Helper\Helper_Interface_Actions;
 use GFPDF\Helper\Helper_Interface_Filters;
-use GFPDF\Helper\Helper_Templates;
-use GFPDF\Model\Model_PDF;
 
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
-use GFPDF\Plugins\WPML\Wpml\Wpml;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
@@ -65,50 +60,34 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	protected $gf;
 
 	/**
-	 * @var Helper_Abstract_Form
+	 * @var PdfInterface
 	 * @since 0.1
 	 */
-	protected $gform;
+	protected $pdf;
 
 	/**
-	 * @var Helper_Abstract_Options
-	 * @since 0.1
+	 * Holds a cache of the active PDF list
+	 *
+	 * @var array
+	 * @since    0.1
+	 *
+	 * @Internal This prevents us reading the template headers from the disk multiple times
 	 */
-	protected $options;
-
-	/**
-	 * @var Helper_Templates
-	 * @since 0.1
-	 */
-	protected $templates;
-
-	/**
-	 * @var Model_PDF
-	 * @since 0.1
-	 */
-	protected $modelPdf;
-
-	protected $pdfCache = [];
+	protected $pdfListCache = [];
 
 	/**
 	 * DownloadLinks constructor.
 	 *
-	 * @param WpmlInterface           $wpml
-	 * @param GravityFormsInterface   $gf
-	 * @param Helper_Abstract_Form    $gform
-	 * @param Helper_Abstract_Options $options
-	 * @param Helper_Templates        $templates
-	 * @param Model_PDF               $modelPdf
+	 * @param WpmlInterface         $wpml
+	 * @param GravityFormsInterface $gf
+	 * @param PdfInterface          $pdf
 	 *
-	 * @since 0.1
+	 * @since 1.0
 	 */
-	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf, Helper_Abstract_Form $gform, Helper_Abstract_Options $options, Helper_Templates $templates, Model_PDF $modelPdf ) {
-		$this->wpml      = $wpml;
-		$this->gf        = $gf;
-		$this->gform     = $gform;
-		$this->options   = $options;
-		$this->templates = $templates;
-		$this->modelPdf  = $modelPdf;
+	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf, PdfInterface $pdf ) {
+		$this->wpml = $wpml;
+		$this->gf   = $gf;
+		$this->pdf  = $pdf;
 	}
 
 	/**
@@ -147,15 +126,15 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	 * @since 0.1
 	 */
 	public function getPdfUrlForLanguage( $url, $pid, $entry_id ) {
-		$entry = $this->gform->get_entry( $entry_id );
-		$pdf   = isset( $entry['form_id'] ) ? $this->options->get_pdf( $entry['form_id'], $pid ) : null;
+		$entry = $this->gf->getEntry( $entry_id );
+		$pdf   = isset( $entry['form_id'] ) ? $this->pdf->getPdf( $entry['form_id'], $pid ) : null;
 
 		if ( is_wp_error( $pdf ) || $pdf === null ) {
 			return $url;
 		}
 
 		/* Get the PDF Group */
-		$templateInfo = $this->templates->get_template_info_by_id( $pdf['template'] );
+		$templateInfo = $this->pdf->getTemplateInfoById( $pdf['template'] );
 		if ( isset( $templateInfo['group'] ) ) {
 			$pdf['group'] = $templateInfo['group'];
 		}
@@ -183,7 +162,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 			return;
 		}
 
-		$form    = $this->gform->get_form( $form_id );
+		$form    = $this->gf->getForm( $form_id );
 		$pdfList = $this->getPdfUrls(
 			$this->getPdfList( $form, $entry ),
 			$form,
@@ -213,8 +192,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
             </div>
 		<?php endforeach;
 
-		/* Remove the standard  */
-		remove_filter( 'gform_entry_info', [ $this->modelPdf, 'view_pdf_entry_detail' ] );
+		$this->pdf->removeFilter( 'gform_entry_info', 'Model_PDF', 'view_pdf_entry_detail' );
 	}
 
 	/**
@@ -259,11 +237,71 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 		return $pdfList;
 	}
 
+	/**
+	 * Get a list of active PDFs for an entry
+	 *
+	 * @param array $form  The Gravity Forms object
+	 * @param array $entry The Gravity Forms entry object
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 *
+	 * @Internal We're overriding the standard Gravity PDF function to overload the list with additional data
+	 */
+	protected function getPdfList( $form, $entry ) {
+		$cache_id = 'pdf-list-' . $form['id'] . '-' . $entry['id'];
+		if ( isset( $this->pdfListCache[ $cache_id ] ) ) {
+			return $this->pdfListCache[ $cache_id ];
+		}
+
+		$pdfList    = [];
+		$activePdfs = $this->pdf->getActivePdfs( $entry['id'] );
+
+		if ( ! empty( $activePdfs ) ) {
+			foreach ( $activePdfs as $settings ) {
+				$templateInfo = $this->pdf->getTemplateInfoById( $settings['template'] );
+
+				/* Add additional information about the PDFs to this array for use with the `gfpdf_wpml_group_support` filter */
+				$pdfList[] = [
+					'pid'      => $settings['id'],
+					'template' => $settings['template'],
+					'name'     => $this->pdf->getPdfName( $entry['id'], $settings['id'] ),
+					'view'     => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], false ),
+					'download' => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], true ),
+					'group'    => $templateInfo['group'],
+					'wpml'     => $templateInfo['wpml'],
+				];
+			}
+		}
+
+		$pdfList = apply_filters( 'gfpdf_get_pdf_display_list', $pdfList, $entry, $form );
+
+		/* Store in cache */
+		$this->pdfListCache[ $cache_id ] = $pdfList;
+
+		return $pdfList;
+	}
+
+	/**
+	 * Checks if the current PDF template is WPML compatible
+	 *
+	 * @param array $pdf The PDF Settings
+	 *
+	 * @return bool
+	 *
+	 * @Internal Either the template specifically includes the `@WPML: true` header, or is apart of the Core/Universal templates
+	 *
+	 * @since    0.1
+	 */
 	protected function isTemplateWpmlCompatible( $pdf ) {
+
+		/* Check if has the `@WPML: true` header */
 		if ( isset( $pdf['wpml'] ) && $pdf['wpml'] == 'true' ) {
 			return true;
 		}
 
+		/* Check if group is Core/Universal which has WPML support out of the box */
 		if ( isset( $pdf['group'] ) ) {
 			$supportedTemplateGroups = apply_filters( 'gfpdf_wpml_group_support', [ 'Core', 'Universal (Premium)' ], $pdf );
 			if ( in_array( $pdf['group'], $supportedTemplateGroups ) ) {
@@ -274,41 +312,14 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 		return false;
 	}
 
-	protected function getPdfList( $form, $entry ) {
-		$cache_id = 'pdf-list-' . $form['id'] . '-' . $entry['id'];
-		if ( isset( $this->pdfCache[ $cache_id ] ) ) {
-			return $this->pdfCache[ $cache_id ];
-		}
-
-		$activePdfs = ( isset( $form['gfpdf_form_settings'] ) ) ? $this->modelPdf->get_active_pdfs( $form['gfpdf_form_settings'], $entry ) : [];
-		$pdfList    = [];
-
-		if ( ! empty( $activePdfs ) ) {
-			foreach ( $activePdfs as $settings ) {
-				$templateInfo = $this->templates->get_template_info_by_id( $settings['template'] );
-
-				/* Add additional information about the PDFs to this array for use with the `gfpdf_wpml_group_support` filter */
-				$pdfList[] = [
-					'pid'      => $settings['id'],
-					'template' => $settings['template'],
-					'name'     => $this->modelPdf->get_pdf_name( $settings, $entry ),
-					'view'     => $this->modelPdf->get_pdf_url( $settings['id'], $entry['id'], false ),
-					'download' => $this->modelPdf->get_pdf_url( $settings['id'], $entry['id'], true ),
-					'group'    => $templateInfo['group'],
-					'wpml'     => $templateInfo['wpml'],
-				];
-			}
-		}
-
-		$pdfList = apply_filters( 'gfpdf_get_pdf_display_list', $pdfList, $entry, $form );
-
-		/* Store in cache */
-		$this->pdfCache[ $cache_id ] = $pdfList;
-
-		return $pdfList;
-	}
-
+	/**
+     * Get the PDF URL Default Action
+     *
+	 * @return string
+     *
+     * @since 0.1
+	 */
 	protected function getPdfDefaultAction() {
-		return strtolower( $this->options->get_option( 'default_action', 'view' ) );
+		return strtolower( $this->pdf->getOption( 'default_action', 'view' ) );
 	}
 }

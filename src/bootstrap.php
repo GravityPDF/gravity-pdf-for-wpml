@@ -11,6 +11,7 @@ use GFPDF\Helper\Helper_Notices;
 use GFPDF\Plugins\WPML\Form\GravityForms;
 use GFPDF\Plugins\WPML\Pdf\DownloadLinks;
 use GFPDF\Plugins\WPML\Pdf\Header;
+use GFPDF\Plugins\WPML\Pdf\Pdf;
 use GFPDF\Plugins\WPML\Wpml\Wpml;
 use GPDFAPI;
 
@@ -69,17 +70,11 @@ class Bootstrap extends Helper_Abstract_Addon {
 		/* Register our classes and pass back up to the parent initialiser */
 		$wpml         = new Wpml();
 		$gravityforms = new GravityForms();
+		$pdf          = new Pdf( $gravityforms );
 
 		$classes = array_merge( $classes, [
-			new Header( GPDFAPI::get_templates_class() ),
-			new DownloadLinks(
-				$wpml,
-				$gravityforms,
-				GPDFAPI::get_form_class(),
-				GPDFAPI::get_options_class(),
-				GPDFAPI::get_templates_class(),
-				GPDFAPI::get_mvc_class( 'Model_PDF' )
-			),
+			new Header(),
+			new DownloadLinks( $wpml, $gravityforms, $pdf ),
 		] );
 
 		/* Run the setup */

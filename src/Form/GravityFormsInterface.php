@@ -41,7 +41,44 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 interface GravityFormsInterface {
 
-	public function saveLanguageCode( $entryId, $languageCode );
+	/**
+	 * Get a Gravity Form object
+	 *
+	 * @param int $formId The Gravity Form ID
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 */
+	public function getForm( $formId );
 
-	public function getLanguageCode( $entryId );
+	/**
+	 * Get a Gravity Form Entry object
+	 *
+	 * @param int $entryId The Gravity Form Entry ID
+	 *
+	 * @return array
+	 */
+	public function getEntry( $entryId );
+
+	/**
+	 * Save the language code with the entry
+	 *
+	 * @param int    $entryId      The Gravity Form Entry ID
+	 * @param string $languageCode The two-character language code
+	 *
+	 * @since 0.1
+	 */
+	public function saveEntryLanguageCode( $entryId, $languageCode );
+
+	/**
+	 * Get the language code from the entry
+	 *
+	 * @param $entryId The Gravity Form Entry ID
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function getEntryLanguageCode( $entryId );
 }
