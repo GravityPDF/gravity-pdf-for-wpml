@@ -18,5 +18,6 @@
 </select>
 
 <input name="gpdf_original_language" value="<?= esc_attr( $languageCode ); ?>" type="hidden" />
+<?php wp_nonce_field( 'gpdf_original_language_nonce', 'gpdf_original_language_nonce' ); ?>
 
 <br><br>

@@ -80,7 +80,7 @@ class EditWpmlLanguageCode {
 		if (
 			apply_filters( 'gravitypdf_wpml_disable_change_language', false ) ||
 			! $this->gf->hasCapability( 'gravityforms_edit_entries' ) ||
-			! in_array( $this->gf->getPage(), [ 'entry_detail_edit', 'entry_detail' ] )
+			! in_array( $this->gf->getPage(), [ 'entry_detail_edit', 'entry_detail' ], true )
 		) {
 			return;
 		}
@@ -126,6 +126,15 @@ class EditWpmlLanguageCode {
 	 * @since 0.1
 	 */
 	public function updateLanguage( $form, $entryId ) {
+
+		/* Verify the nonce */
+		if (
+			! isset( $_POST['gpdf_original_language_nonce'] ) ||
+			! wp_verify_nonce( $_POST['gpdf_original_language_nonce'], 'gpdf_original_language_nonce' )
+		) {
+			return;
+		}
+
 		$newLanguageCode = isset( $_POST['gpdf_language'] ) ? $_POST['gpdf_language'] : '';
 		$oldLanguageCode = isset( $_POST['gpdf_original_language'] ) ? $_POST['gpdf_original_language'] : '';
 
@@ -165,9 +174,7 @@ class EditWpmlLanguageCode {
 			];
 		}
 
-		ob_start();
 		include __DIR__ . '/markup/EntryLanguageEdit.php';
-		echo ob_get_clean();
 	}
 
 	/**
@@ -183,9 +190,7 @@ class EditWpmlLanguageCode {
 		$translatedLang = isset( $languages[ $languageCode ] ) ? $languages[ $languageCode ]['translated_name'] : $languageCode;
 		$language       = ( $nativeLang === $translatedLang ) ? $translatedLang : "$translatedLang ($nativeLang)";
 
-		ob_start();
 		include __DIR__ . '/markup/EntryLanguageView.php';
-		echo ob_get_clean();
 	}
 
 	/**

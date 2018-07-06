@@ -178,9 +178,7 @@ class DownloadLinks {
 			$languageCode
 		);
 
-		ob_start();
 		include __DIR__ . '/markup/PdfEntryDetailsLinks.php';
-		echo ob_get_clean();
 
 		$this->pdf->removeFilter( 'gform_entry_info', 'Model_PDF', 'view_pdf_entry_detail' );
 	}
@@ -296,14 +294,14 @@ class DownloadLinks {
 	protected function isTemplateWpmlCompatible( $pdf ) {
 
 		/* Check if has the `@WPML: true` header */
-		if ( isset( $pdf['wpml'] ) && $pdf['wpml'] == 'true' ) {
+		if ( isset( $pdf['wpml'] ) && $pdf['wpml'] === 'true' ) {
 			return true;
 		}
 
 		/* Check if group is Core/Universal which has WPML support out of the box */
 		if ( isset( $pdf['group'] ) ) {
 			$supportedTemplateGroups = apply_filters( 'gfpdf_wpml_group_support', [ 'Core', 'Universal (Premium)' ], $pdf );
-			if ( in_array( $pdf['group'], $supportedTemplateGroups ) ) {
+			if ( in_array( $pdf['group'], $supportedTemplateGroups, true ) ) {
 				return true;
 			}
 		}
