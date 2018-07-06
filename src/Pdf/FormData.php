@@ -37,10 +37,26 @@ if ( ! defined( 'ABSPATH' ) ) {
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+/**
+ * Class FormData
+ *
+ * @package GFPDF\Plugins\WPML\Pdf
+ */
 class FormData implements Helper_Interface_Filters {
 
+	/**
+	 * @var GravityFormsInterface
+	 * @since 0.1
+	 */
 	protected $gf;
 
+	/**
+	 * FormData constructor.
+	 *
+	 * @param GravityFormsInterface $gf
+	 *
+	 * @since 0.1
+	 */
 	public function __construct( GravityFormsInterface $gf ) {
 		$this->gf = $gf;
 	}

@@ -80,7 +80,7 @@ class Bootstrap extends Helper_Abstract_Addon {
 			new Header(),
 			new DownloadLinks( $wpml, $gf, $pdf ),
 			new Translation( $wpml, $gf ),
-			new StoreWpmlLanguage( $gf ),
+			new StoreWpmlLanguage( $wpml, $gf ),
 			new EditWpmlLanguageCode( $wpml, $gf ),
 			new FormData( $gf ),
 		] );

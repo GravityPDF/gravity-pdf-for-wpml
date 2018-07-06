@@ -66,6 +66,14 @@ class Translation implements Helper_Interface_Actions, Helper_Interface_Filters 
 	 */
 	public $currentLanguage = '';
 
+	/**
+	 * Translation constructor.
+	 *
+	 * @param WpmlInterface         $wpml
+	 * @param GravityFormsInterface $gf
+	 *
+	 * @since 0.1
+	 */
 	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf ) {
 		$this->wpml = $wpml;
 		$this->gf   = $gf;
@@ -102,10 +110,14 @@ class Translation implements Helper_Interface_Actions, Helper_Interface_Filters 
 		add_filter( 'gform_form_post_get_meta', [ $this, 'translateGravityForm' ] );
 	}
 
-
-	public function prePdfViewOrDownload( $form, $entry ) {
+	/**
+	 * Flush the GF cache and store the current site language
+	 *
+	 * @since 0.1
+	 */
+	public function prePdfViewOrDownload() {
 		$this->gf->flushCurrentGravityForm();
-		$this->currentLanguage = ICL_LANGUAGE_CODE;
+		$this->currentLanguage = $this->wpml->getCurrentSiteLanguage();
 	}
 
 	/**

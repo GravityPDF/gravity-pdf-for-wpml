@@ -38,8 +38,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Interface PdfInterface
  *
  * @package GFPDF\Plugins\WPML\Pdf
- *
- * @since   0.1
  */
 interface PdfInterface {
 

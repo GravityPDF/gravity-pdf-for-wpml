@@ -35,11 +35,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 */
 
 /**
- * Interface Wpml
+ * Interface WpmlInterface
  *
  * @package GFPDF\Plugins\WPML\Wpml
- *
- * @since   0.1
  */
 interface WpmlInterface {
 

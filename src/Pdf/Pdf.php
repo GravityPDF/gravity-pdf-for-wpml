@@ -196,7 +196,7 @@ class Pdf implements PdfInterface {
 	 * @since 0.1
 	 */
 	public function removeFilter( $filterName, $className, $methodName, $priority = 10 ) {
-		$class = \GPDFAPI::get_mvc_class( $className );
+		$class = GPDFAPI::get_mvc_class( $className );
 
 		remove_filter( $filterName, [ $class, $methodName ], $priority );
 	}

@@ -1,5 +1,5 @@
 {
-  "name": "gravity-pdf/wpml",
+  "name": "gravity-pdf/gravity-pdf-for-wpml",
   "type": "project",
   "license": "GPLv2",
   "require": {
@@ -7,7 +7,7 @@
   },
   "config": {
     "preferred-install": "dist",
-    "autoloader-suffix": "GravityPDFForWPMLAddon"
+    "autoloader-suffix": "GravityPdfForWpmlAddon"
   },
   "require-dev": {
     "phpunit/phpunit": ">4.0 <7"

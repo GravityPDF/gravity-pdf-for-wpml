@@ -6,7 +6,7 @@ You are more than welcome to create a pull request and contribute to Gravity PDF
 
 There are a few guidelines that need to be followed to ensure a smooth pull request. These include:
 
-1. Adhere to the existing code standard which mostly follows [WordPress standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/php/).
+1. We follow [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) and [WordPress Code Standards](https://make.wordpress.org/core/handbook/best-practices/coding-standards/php/) which don't clash with PSR-1 (except Yoda Conditions). 
 
 1. All PRs must be to the `development` branch.
 

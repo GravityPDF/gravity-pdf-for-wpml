@@ -10,8 +10,6 @@ namespace GFPDF\Plugins\WPML\Wpml;
  */
 
 /* Exit if accessed directly */
-use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -37,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 */
 
 /**
- * Class WPML
+ * Class Wpml
  *
  * @package GFPDF\Plugins\WPML\Wpml
  */

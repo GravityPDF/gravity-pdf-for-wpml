@@ -3,6 +3,7 @@
 namespace GFPDF\Plugins\WPML\Form;
 
 use GFPDF\Helper\Helper_Interface_Actions;
+use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
  * @package     Gravity PDF for WPML
@@ -44,6 +45,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class StoreWpmlLanguage implements Helper_Interface_Actions {
 
 	/**
+	 * @var WpmlInterface
+	 * @since 0.1
+	 */
+	protected $wpml;
+
+	/**
 	 * @var GravityFormsInterface
 	 * @since 0.1
 	 */
@@ -52,12 +59,14 @@ class StoreWpmlLanguage implements Helper_Interface_Actions {
 	/**
 	 * StoreWpmlLanguage constructor.
 	 *
+	 * @param WpmlInterface         $wpml
 	 * @param GravityFormsInterface $gf
 	 *
 	 * @since 0.1
 	 */
-	public function __construct( GravityFormsInterface $gf ) {
-		$this->gf = $gf;
+	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf ) {
+		$this->wpml = $wpml;
+		$this->gf   = $gf;
 	}
 
 	/**
@@ -82,6 +91,6 @@ class StoreWpmlLanguage implements Helper_Interface_Actions {
 	 * @since 0.1
 	 */
 	public function saveLanguageCode( $entry ) {
-		$this->gf->saveEntryLanguageCode( $entry['id'], ICL_LANGUAGE_CODE );
+		$this->gf->saveEntryLanguageCode( $entry['id'], $this->wpml->getCurrentSiteLanguage() );
 	}
 }

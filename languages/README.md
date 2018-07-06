@@ -1,9 +1,9 @@
-### Including your own Translations for Gravity PDF
+### Including your own Translations for Gravity PDF for WPML
 
 Don't place any .mo / .po files in this directory. They will be overridden when the plugin is updated. 
 Instead, put them in your language directory – by default this is /wp-content/languages/plugins/. 
 
-Make sure you name your .mo files `gravity-pdf-for-wpml-{:wp_locale}.mo`, where {:wp_locale} is the ID found 
+Make sure you name your .mo files `gravity-pdf-for-wpml-{wp_locale}.mo`, where `{wp_locale}` is replaced by an ID found 
  in this list: https://make.wordpress.org/polyglots/teams/. 
  
 For example, if you had a translation for Bengali you would name the file `gravity-pdf-for-wpml-bn_BD.mo`
