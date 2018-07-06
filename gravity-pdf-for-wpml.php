@@ -12,35 +12,41 @@
  */
 
 /**
+ * Check the dependancies are met, then load plugin
+ *
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     https://opensource.org/licenses/GPL-3.0 GNU Public License
  * @since       0.1
  */
 
-/* Exit if accessed directly */
+/*
+ * Exit if accessed directly
+ * phpcs:disable
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+/* phpcs:enable */
 
 /*
-    This file is part of Gravity PDF for WPML.
+	This file is part of Gravity PDF for WPML.
 
-    Copyright (c) 2018, Blue Liquid Designs
+	Copyright (c) 2018, Blue Liquid Designs
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 define( 'GFPDF_PDF_WPML_FILE', __FILE__ );
@@ -55,36 +61,30 @@ class GpdfWpmlChecks {
 	 * Holds any blocker error messages stopping plugin running
 	 *
 	 * @var array
-	 *
 	 * @since 0.1
 	 */
 	private $notices = [];
 
 	/**
 	 * @var string
-	 *
 	 * @since 0.1
 	 */
 	private $requiredGravitypdfVersion = '4.4.0';
 
 	/**
 	 * @var string
-	 *
 	 * @since 0.1
 	 */
 	private $requiredWpmlVersion = '4.0.3';
 
 	/**
 	 * @var string
-	 *
 	 * @since 0.1
 	 */
 	private $requiredWpmlGravityformsVersion = '1.3.17';
 
 	/**
 	 * Run our pre-checks and if it passes bootstrap the plugin
-	 *
-	 * @return void
 	 *
 	 * @since 0.1
 	 */
@@ -99,7 +99,7 @@ class GpdfWpmlChecks {
 		if ( count( $this->notices ) > 0 ) {
 			add_action( 'admin_notices', [ $this, 'displayNotices' ] );
 
-			return null;
+			return;
 		}
 
 		add_action( 'gfpdf_fully_loaded', function() {
@@ -110,17 +110,16 @@ class GpdfWpmlChecks {
 	/**
 	 * Check if the current version of Gravity PDF is compatible with this add-on
 	 *
-	 * @return bool
-	 *
 	 * @since 0.1
 	 */
 	public function checkGravitypdfVersion() {
 
 		/* Check if the Gravity PDF Minimum version requirements are met */
-		if ( defined( 'PDF_EXTENDED_VERSION' ) &&
-		     version_compare( PDF_EXTENDED_VERSION, $this->requiredGravitypdfVersion, '>=' )
+		if (
+			defined( 'PDF_EXTENDED_VERSION' ) &&
+			version_compare( PDF_EXTENDED_VERSION, $this->requiredGravitypdfVersion, '>=' )
 		) {
-			return true;
+			return;
 		}
 
 		/* Throw error */
@@ -130,17 +129,16 @@ class GpdfWpmlChecks {
 	/**
 	 * Check if the current version of WPML is compatible with this add-on
 	 *
-	 * @return bool
-	 *
 	 * @since 0.1
 	 */
 	public function checkWpmlVersion() {
 
 		/* Check if the WPML minimum version requirements are met */
-		if ( defined( 'ICL_SITEPRESS_VERSION' ) &&
-		     version_compare( ICL_SITEPRESS_VERSION, $this->requiredWpmlVersion, '>=' )
+		if (
+			defined( 'ICL_SITEPRESS_VERSION' ) &&
+			version_compare( ICL_SITEPRESS_VERSION, $this->requiredWpmlVersion, '>=' )
 		) {
-			return true;
+			return;
 		}
 
 		/* Throw error */
@@ -150,17 +148,16 @@ class GpdfWpmlChecks {
 	/**
 	 * Check if the current version of WPML's Gravity Forms Multilingual is compatible with this add-on
 	 *
-	 * @return bool
-	 *
 	 * @since 0.1
 	 */
 	public function checkWpmlGravityformsVersion() {
 
 		/* Check if the Gravity PDF Minimum version requirements are met */
-		if ( defined( 'GRAVITYFORMS_MULTILINGUAL_VERSION' ) &&
-		     version_compare( GRAVITYFORMS_MULTILINGUAL_VERSION, $this->requiredWpmlGravityformsVersion, '>=' )
+		if (
+			defined( 'GRAVITYFORMS_MULTILINGUAL_VERSION' ) &&
+			version_compare( GRAVITYFORMS_MULTILINGUAL_VERSION, $this->requiredWpmlGravityformsVersion, '>=' )
 		) {
-			return true;
+			return;
 		}
 
 		/* Throw error */
@@ -176,18 +173,18 @@ class GpdfWpmlChecks {
 	 */
 	public function displayNotices() {
 		?>
-        <div class="error">
-            <p>
-                <strong><?php esc_html_e( 'Gravity PDF for WPML Installation Problem', 'gravity-pdf-for-wpml' ); ?></strong>
-            </p>
+		<div class="error">
+			<p>
+				<strong><?php esc_html_e( 'Gravity PDF for WPML Installation Problem', 'gravity-pdf-for-wpml' ); ?></strong>
+			</p>
 
-            <p><?php esc_html_e( 'The minimum requirements for the Gravity PDF for WPML plugin have not been met. Please fix the issue(s) below to continue:', 'gravity-pdf-for-wpml' ); ?></p>
-            <ul style="padding-bottom: 0.5em">
-				<?php foreach ( $this->notices as $notice ) : ?>
-                    <li style="padding-left: 20px;list-style: inside"><?php echo $notice; ?></li>
+			<p><?php esc_html_e( 'The minimum requirements for the Gravity PDF for WPML plugin have not been met. Please fix the issue(s) below to continue:', 'gravity-pdf-for-wpml' ); ?></p>
+			<ul style="padding-bottom: 0.5em">
+				<?php foreach ( $this->notices as $notice ): ?>
+					<li style="padding-left: 20px;list-style: inside"><?php echo $notice; ?></li>
 				<?php endforeach; ?>
-            </ul>
-        </div>
+			</ul>
+		</div>
 		<?php
 	}
 }

@@ -2,8 +2,6 @@
 
 namespace GFPDF\Plugins\WPML\Pdf;
 
-use GFPDF\Helper\Helper_Interface_Actions;
-use GFPDF\Helper\Helper_Interface_Filters;
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
@@ -14,29 +12,33 @@ use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
  * @since       0.1
  */
 
-/* Exit if accessed directly */
+/*
+ * Exit if accessed directly
+ * phpcs:disable
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+/* phpcs:enable */
 
 /*
-    This file is part of Gravity PDF for WPML.
+	This file is part of Gravity PDF for WPML.
 
-    Copyright (c) 2018, Blue Liquid Designs
+	Copyright (c) 2018, Blue Liquid Designs
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 /**
@@ -44,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @package GFPDF\Plugins\WPML\Pdf
  */
-class Translation implements Helper_Interface_Actions, Helper_Interface_Filters {
+class Translation {
 
 	/**
 	 * @var WpmlInterface
@@ -85,14 +87,14 @@ class Translation implements Helper_Interface_Actions, Helper_Interface_Filters 
 	 * @since 0.1
 	 */
 	public function init() {
-		$this->add_actions();
-		$this->add_filters();
+		$this->addActions();
+		$this->addFilters();
 	}
 
 	/**
 	 * @since 0.1
 	 */
-	public function add_actions() {
+	public function addActions() {
 		add_action( 'gfpdf_pre_pdf_generation', [ $this, 'prePdfViewOrDownload' ] );
 
 		/* @TODO - Add these actions into core plugin (Model_PDF, api.php) */
@@ -106,7 +108,7 @@ class Translation implements Helper_Interface_Actions, Helper_Interface_Filters 
 	/**
 	 * @since 0.1
 	 */
-	public function add_filters() {
+	public function addFilters() {
 		add_filter( 'gform_form_post_get_meta', [ $this, 'translateGravityForm' ] );
 	}
 

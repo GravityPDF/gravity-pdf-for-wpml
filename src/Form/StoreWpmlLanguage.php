@@ -2,7 +2,6 @@
 
 namespace GFPDF\Plugins\WPML\Form;
 
-use GFPDF\Helper\Helper_Interface_Actions;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
@@ -12,29 +11,33 @@ use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
  * @since       0.1
  */
 
-/* Exit if accessed directly */
+/*
+ * Exit if accessed directly
+ * phpcs:disable
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+/* phpcs:enable */
 
 /*
-    This file is part of Gravity PDF for WPML.
+	This file is part of Gravity PDF for WPML.
 
-    Copyright (c) 2018, Blue Liquid Designs
+	Copyright (c) 2018, Blue Liquid Designs
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 /**
@@ -42,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @package GFPDF\Plugins\WPML\Form
  */
-class StoreWpmlLanguage implements Helper_Interface_Actions {
+class StoreWpmlLanguage {
 
 	/**
 	 * @var WpmlInterface
@@ -73,13 +76,13 @@ class StoreWpmlLanguage implements Helper_Interface_Actions {
 	 * @since 0.1
 	 */
 	public function init() {
-		$this->add_actions();
+		$this->addActions();
 	}
 
 	/**
 	 * @since 0.1
 	 */
-	public function add_actions() {
+	public function addActions() {
 		add_action( 'gform_entry_created', [ $this, 'saveLanguageCode' ], 10, 1 );
 	}
 
