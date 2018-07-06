@@ -1,3 +1,7 @@
+<?php
+/** @var array $pdfList The active PDFs for the current Gravity Forms Entry */
+?>
+
 <strong><?php esc_html_e( 'PDFs', 'gravity-forms-pdf-extended' ); ?></strong><br />
 <?php foreach ( $pdfList as $pdf ): ?>
 	<div class="gfpdf_detailed_pdf_container">

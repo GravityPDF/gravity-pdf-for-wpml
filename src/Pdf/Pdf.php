@@ -2,9 +2,9 @@
 
 namespace GFPDF\Plugins\WPML\Pdf;
 
+use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 use GPDFAPI;
-use Exception;
 
 /**
  * @package     Gravity PDF for WPML
@@ -74,7 +74,7 @@ class Pdf implements PdfInterface {
 	 *
 	 * @return array
 	 *
-	 * @throws Exception
+	 * @throws GpdfWpmlException
 	 *
 	 * @since 0.1
 	 */
@@ -82,7 +82,7 @@ class Pdf implements PdfInterface {
 		$pdf = GPDFAPI::get_pdf( $formId, $pdfId );
 
 		if ( is_wp_error( $pdf ) ) {
-			throw new Exception( $pdf->get_error_message() );
+			throw new GpdfWpmlException( $pdf->get_error_message() );
 		}
 
 		return $pdf;
@@ -96,22 +96,15 @@ class Pdf implements PdfInterface {
 	 *
 	 * @return string
 	 *
-	 * @throws Exception
+	 * @throws GpdfWpmlException
 	 *
 	 * @since 0.1
 	 */
 	public function getPdfName( $entryId, $pdfId ) {
-		$entry = $this->gf->getEntry( $entryId );
-		if ( is_wp_error( $entry ) ) {
-			throw new Exception( $entry->get_error_message() );
-		}
-
+		$entry      = $this->gf->getEntry( $entryId );
 		$pdfSetting = $this->getPdf( $entry['form_id'], $pdfId );
-		if ( is_wp_error( $pdfSetting ) ) {
-			throw new Exception( $pdfSetting->get_error_message() );
-		}
+		$modelPdf   = GPDFAPI::get_mvc_class( 'Model_PDF' );
 
-		$modelPdf = GPDFAPI::get_mvc_class( 'Model_PDF' );
 		return $modelPdf->get_pdf_name( $pdfSetting, $entry );
 	}
 
@@ -138,20 +131,13 @@ class Pdf implements PdfInterface {
 	 *
 	 * @return array
 	 *
-	 * @throws Exception
+	 * @throws GpdfWpmlException
 	 *
 	 * @since 0.1
 	 */
 	public function getActivePdfs( $entryId ) {
 		$entry = $this->gf->getEntry( $entryId );
-		if ( is_wp_error( $entry ) ) {
-			throw new Exception( $entry->get_error_message() );
-		}
-
-		$form = $this->gf->getForm( $entry['form_id'] );
-		if ( is_wp_error( $form ) ) {
-			throw new Exception( $form->get_error_message() );
-		}
+		$form  = $this->gf->getForm( $entry['form_id'] );
 
 		if ( ! isset( $form['gfpdf_form_settings'] ) || ! is_array( $form['gfpdf_form_settings'] ) ) {
 			return [];

@@ -109,8 +109,6 @@ class Wpml implements WpmlInterface {
 	 *
 	 * @param string $languageCode The two-character language code
 	 *
-	 * @return null
-	 *
 	 * @since 0.1
 	 */
 	public function setSiteLanguage( $languageCode ) {
@@ -119,8 +117,6 @@ class Wpml implements WpmlInterface {
 
 	/**
 	 * Restore the language back to the original
-	 *
-	 * @return null
 	 *
 	 * @since 0.1
 	 */
@@ -154,8 +150,8 @@ class Wpml implements WpmlInterface {
 	/**
 	 * Check if the Gravity Form has been translated
 	 *
-	 * @param array $form         The Gravity Forms form object
-	 * @param       $languageCode The two-character language code
+	 * @param array  $form         The Gravity Forms form object
+	 * @param string $languageCode The two-character language code
 	 *
 	 * @return boolean
 	 *
@@ -172,8 +168,8 @@ class Wpml implements WpmlInterface {
 	/**
 	 * Get the translated Gravity Forms form object
 	 *
-	 * @param array $form         The Gravity Forms form object
-	 * @param       $languageCode The two-character language code
+	 * @param array  $form         The Gravity Forms form object
+	 * @param string $languageCode The two-character language code
 	 *
 	 * @return array
 	 *

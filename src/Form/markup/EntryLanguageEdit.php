@@ -1,3 +1,10 @@
+<?php
+/**
+ * @var array  $languages    Contains the WPML Language Array
+ * @var string $languageCode Contains the Gravity Forms Entry Language Code
+ */
+?>
+
 <label for="change_wpml_language"><?= esc_html__( 'Change Language:', 'gravity-pdf-for-wpml' ); ?></label>
 <select name="gpdf_language" id="change_wpml_language" class="widefat">
 	<?php foreach ( $languages as $lang ): ?>

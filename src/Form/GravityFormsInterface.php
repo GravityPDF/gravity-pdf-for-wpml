@@ -2,6 +2,8 @@
 
 namespace GFPDF\Plugins\WPML\Form;
 
+use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
+
 /**
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
@@ -52,6 +54,8 @@ interface GravityFormsInterface {
 	 *
 	 * @return array
 	 *
+	 * @throws GpdfWpmlException
+	 *
 	 * @since 0.1
 	 */
 	public function getForm( $formId );
@@ -62,6 +66,10 @@ interface GravityFormsInterface {
 	 * @param int $entryId The Gravity Form Entry ID
 	 *
 	 * @return array
+	 *
+	 * @throws GpdfWpmlException
+	 *
+	 * @since 0.1
 	 */
 	public function getEntry( $entryId );
 
@@ -78,7 +86,7 @@ interface GravityFormsInterface {
 	/**
 	 * Get the language code from the entry
 	 *
-	 * @param $entryId The Gravity Form Entry ID
+	 * @param int $entryId The Gravity Form Entry ID
 	 *
 	 * @return string
 	 *

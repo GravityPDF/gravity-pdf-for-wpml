@@ -2,6 +2,7 @@
 
 namespace GFPDF\Plugins\WPML\Form;
 
+use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
 use GPDFAPI;
 use GFFormsModel;
 use GFForms;
@@ -56,6 +57,8 @@ class GravityForms implements GravityFormsInterface {
 	 *
 	 * @return array
 	 *
+	 * @throws GpdfWpmlException
+	 *
 	 * @since 0.1
 	 */
 	public function getForm( $formId ) {
@@ -64,7 +67,7 @@ class GravityForms implements GravityFormsInterface {
 		$form = $gform->get_form( $formId );
 
 		if ( $form === null ) {
-			throw new Exception( sprintf( 'Could not find Gravity Form with ID %s', $formId ) );
+			throw new GpdfWpmlException( sprintf( 'Could not find Gravity Form with ID %s', $formId ) );
 		}
 
 		return $form;
@@ -76,13 +79,17 @@ class GravityForms implements GravityFormsInterface {
 	 * @param int $entryId The Gravity Form Entry ID
 	 *
 	 * @return array
+	 *
+	 * @throws GpdfWpmlException
+	 *
+	 * @since 0.1
 	 */
 	public function getEntry( $entryId ) {
 		$gform = GPDFAPI::get_form_class();
 		$entry = $gform->get_entry( $entryId );
 
 		if ( is_wp_error( $entry ) ) {
-			throw new Exception( $entry->get_error_message() );
+			throw new GpdfWpmlException( $entry->get_error_message() );
 		}
 
 		return $entry;
@@ -103,7 +110,7 @@ class GravityForms implements GravityFormsInterface {
 	/**
 	 * Get the language code from the entry
 	 *
-	 * @param $entryId The Gravity Form Entry ID
+	 * @param int $entryId The Gravity Form Entry ID
 	 *
 	 * @return string
 	 *

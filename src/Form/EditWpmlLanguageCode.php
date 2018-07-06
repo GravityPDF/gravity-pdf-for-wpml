@@ -99,14 +99,14 @@ class EditWpmlLanguageCode {
 	/**
 	 * Output the field to change the entry language
 	 *
-	 * @param int   $form_id
+	 * @param int   $formId
 	 * @param array $entry
 	 *
 	 * @return void
 	 *
 	 * @since 1.0
 	 */
-	public function addLanguageSelector( $form_id, $entry ) {
+	public function addLanguageSelector( $formId, $entry ) {
 		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
 		$languages    = $this->wpml->getSiteLanguages();
 

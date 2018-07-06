@@ -2,6 +2,7 @@
 
 namespace GFPDF\Plugins\WPML\Pdf;
 
+use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
@@ -128,10 +129,11 @@ class DownloadLinks {
 	 */
 	public function getPdfUrlForLanguage( $url, $pid, $entry_id ) {
 		/* @TODO include trailing slash fix in get_pdf_url() */
-		$entry = $this->gf->getEntry( $entry_id );
-		$pdf   = isset( $entry['form_id'] ) ? $this->pdf->getPdf( $entry['form_id'], $pid ) : null;
 
-		if ( is_wp_error( $pdf ) || $pdf === null ) {
+		try {
+			$entry = $this->gf->getEntry( $entry_id );
+			$pdf   = $this->pdf->getPdf( $entry['form_id'], $pid );
+		} catch ( GpdfWpmlException $e ) {
 			return $url;
 		}
 
@@ -164,7 +166,12 @@ class DownloadLinks {
 			return;
 		}
 
-		$form    = $this->gf->getForm( $form_id );
+		try {
+			$form = $this->gf->getForm( $form_id );
+		} catch ( GpdfWpmlException $e ) {
+			return;
+		}
+
 		$pdfList = $this->getPdfUrls(
 			$this->getPdfList( $form, $entry ),
 			$form,
@@ -209,7 +216,7 @@ class DownloadLinks {
 				/* Only show if the URL has been successfully translated */
 				if ( $url !== $pdf[ $pdfAction ] ) {
 					$pdf['languages'][] = sprintf(
-						'<a href="%s">%s</a>',
+						'<a href="%1$s">%2$s</a>',
 						esc_attr( $url ),
 						esc_html( $lang['code'] )
 					);
@@ -238,23 +245,32 @@ class DownloadLinks {
 			return $this->pdfListCache[ $cache_id ];
 		}
 
-		$pdfList    = [];
-		$activePdfs = $this->pdf->getActivePdfs( $entry['id'] );
+		$pdfList = [];
+
+		try {
+			$activePdfs = $this->pdf->getActivePdfs( $entry['id'] );
+		} catch ( GpdfWpmlException $e ) {
+			return $pdfList;
+		}
 
 		if ( ! empty( $activePdfs ) ) {
 			foreach ( $activePdfs as $settings ) {
 				$templateInfo = $this->pdf->getTemplateInfoById( $settings['template'] );
 
 				/* Add additional information about the PDFs to this array for use with the `gfpdf_wpml_group_support` filter */
-				$pdfList[] = [
-					'pid'      => $settings['id'],
-					'template' => $settings['template'],
-					'name'     => $this->pdf->getPdfName( $entry['id'], $settings['id'] ),
-					'view'     => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], false ),
-					'download' => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], true ),
-					'group'    => $templateInfo['group'],
-					'wpml'     => $templateInfo['wpml'],
-				];
+				try {
+					$pdfList[] = [
+						'pid'      => $settings['id'],
+						'template' => $settings['template'],
+						'name'     => $this->pdf->getPdfName( $entry['id'], $settings['id'] ),
+						'view'     => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], false ),
+						'download' => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], true ),
+						'group'    => $templateInfo['group'],
+						'wpml'     => $templateInfo['wpml'],
+					];
+				} catch ( GpdfWpmlException $e ) {
+					continue;
+				}
 			}
 		}
 
