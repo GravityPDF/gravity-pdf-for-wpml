@@ -76,4 +76,4 @@ class GravityPdfWpmlUnitTestsBootstrap {
 	}
 }
 
-$GLOBALS['GFPDF_Test'] = new GravityPDF_WPML_Unit_Tests_Bootstrap();
+$GLOBALS['GFPDF_Test'] = new GravityPdfWpmlUnitTestsBootstrap();
