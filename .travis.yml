@@ -38,7 +38,7 @@ before_script:
 
 script:
  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then ./vendor/bin/phpunit --coverage-clover=coverage/php-coverage1.xml; fi
- - if [[ ! $PHPUNIT_COVERAGE_TEST ] && [ ! $SNIFF ]]; then ./vendor/bin/phpunit; fi
+ - if [[ ! $PHPUNIT_COVERAGE_TEST && ! $SNIFF ]]; then ./vendor/bin/phpunit; fi
  - if [[ $SNIFF ]]; then $PHPCS_DIR/bin/phpcs -p .; fi
 
 after_success:
