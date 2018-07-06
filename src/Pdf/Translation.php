@@ -66,7 +66,7 @@ class Translation {
 	 * @var string
 	 * @since 0.1
 	 */
-	public $currentLanguage = '';
+	protected $currentLanguage = '';
 
 	/**
 	 * Translation constructor.
@@ -95,7 +95,8 @@ class Translation {
 	 * @since 0.1
 	 */
 	public function addActions() {
-		add_action( 'gfpdf_pre_pdf_generation', [ $this, 'prePdfViewOrDownload' ] );
+		/* @TODO - Add this action into core plugin (Controller_PDF) */
+		add_action( 'gfpdf_pre_view_or_download_pdf', [ $this, 'prePdfViewOrDownload' ] );
 
 		/* @TODO - Add these actions into core plugin (Model_PDF, api.php) */
 		add_action( 'gfpdf_pre_generate_and_save_pdf_notification', [ $this, 'prePdfGeneration' ], 10, 2 );
