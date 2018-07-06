@@ -4,7 +4,6 @@ namespace GFPDF\Plugins\WPML\Pdf;
 
 use GFPDF\Helper\Helper_Interface_Actions;
 use GFPDF\Helper\Helper_Interface_Filters;
-
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
@@ -126,6 +125,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	 * @since 0.1
 	 */
 	public function getPdfUrlForLanguage( $url, $pid, $entry_id ) {
+		/* @TODO include trailing slash fix in get_pdf_url() */
 		$entry = $this->gf->getEntry( $entry_id );
 		$pdf   = isset( $entry['form_id'] ) ? $this->pdf->getPdf( $entry['form_id'], $pid ) : null;
 
@@ -141,7 +141,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 
 		/* Translate the URL if the template is WPML-compatible */
 		if ( $this->isTemplateWpmlCompatible( $pdf ) ) {
-			return $this->wpml->getTranslatedUrl( $url, $this->gf->getLanguageCode( $entry['id'] ) );
+			return $this->wpml->getTranslatedUrl( $url, $this->gf->getEntryLanguageCode( $entry['id'] ) );
 		}
 
 		return $url;
@@ -157,7 +157,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	 * @since 0.1
 	 */
 	public function addLinksToEntryDetails( $form_id, $entry ) {
-		$languageCode = $this->gf->getLanguageCode( $entry['id'] );
+		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
 		if ( ! $this->wpml->hasSiteLanguage( $languageCode ) ) {
 			return;
 		}
@@ -205,7 +205,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	 * @return array
 	 */
 	protected function getPdfUrls( $pdfList, $form, $currentLanguageCode ) {
-		$languages = ( ! is_wp_error( $form ) ) ? $this->wpml->getGravityFormLanguages( $form ) : $this->wpml->getSiteLanguages();
+		$languages = ! is_wp_error( $form ) ? $this->wpml->getGravityFormLanguages( $form ) : $this->wpml->getSiteLanguages();
 		$pdfAction = $this->getPdfDefaultAction();
 
 		/* Remove the current language if it exists (handled via main links) */
@@ -245,7 +245,7 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	 *
 	 * @return array
 	 *
-	 * @since 0.1
+	 * @since    0.1
 	 *
 	 * @Internal We're overriding the standard Gravity PDF function to overload the list with additional data
 	 */
@@ -313,11 +313,11 @@ class DownloadLinks implements Helper_Interface_Actions, Helper_Interface_Filter
 	}
 
 	/**
-     * Get the PDF URL Default Action
-     *
+	 * Get the PDF URL Default Action
+	 *
 	 * @return string
-     *
-     * @since 0.1
+	 *
+	 * @since 0.1
 	 */
 	protected function getPdfDefaultAction() {
 		return strtolower( $this->pdf->getOption( 'default_action', 'view' ) );

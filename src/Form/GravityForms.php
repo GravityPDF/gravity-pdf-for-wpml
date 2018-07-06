@@ -2,6 +2,10 @@
 
 namespace GFPDF\Plugins\WPML\Form;
 
+use GPDFAPI;
+use GFFormsModel;
+use GFForms;
+
 /**
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
@@ -105,5 +109,58 @@ class GravityForms implements GravityFormsInterface {
 		}
 
 		return $languageCode;
+	}
+
+	/**
+	 * Flush the current Gravity Form from the cache
+	 *
+	 * @since 0.1
+	 */
+	public function flushCurrentGravityForm() {
+		GFFormsModel::flush_current_forms();
+	}
+
+	/**
+	 * Check if the current user has a particular capability
+	 *
+	 * @param string   $capability
+	 * @param int|null $userId
+	 *
+	 * @return bool
+	 *
+	 * @since 0.1
+	 */
+	public function hasCapability( $capability, $userId = null ) {
+		$gform = GPDFAPI::get_form_class();
+		return $gform->has_capability( $capability, $userId );
+	}
+
+	/**
+	 * Get the page the user is currently on
+	 *
+	 * @return string The Gravity Forms page, or an empty string
+	 *
+	 * @since 0.1
+	 */
+	public function getPage() {
+		$page = GFForms::get_page();
+		return $page !== false ? $page : '';
+	}
+
+	/**
+	 * Add a note to the Gravity Form Entry
+	 *
+	 * @param int    $entryId
+	 * @param string $note
+	 *
+	 * @since 0.1
+	 */
+	public function addNote( $entryId, $note ) {
+		global $current_user;
+
+		$userData    = get_userdata( $current_user->ID );
+		$displayName = $userData !== false ? $userData->display_name : 'Unknown';
+
+		GFFormsModel::add_note( $entryId, $current_user->ID, $displayName, $note, 'note' );
 	}
 }

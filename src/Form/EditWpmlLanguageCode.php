@@ -3,9 +3,7 @@
 namespace GFPDF\Plugins\WPML\Form;
 
 use GFPDF\Helper\Helper_Interface_Actions;
-use GPDFAPI;
-use GFForms;
-use GFFormsModel;
+use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
  * @package     Gravity PDF for WPML
@@ -47,18 +45,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 class EditWpmlLanguageCode implements Helper_Interface_Actions {
 
 	/**
-	 * Initialise our module
+	 * @var WpmlInterface
+	 * @since 0.1
+	 */
+	protected $wpml;
+
+	/**
+	 * @var GravityFormsInterface
+	 * @since 0.1
+	 */
+	protected $gf;
+
+	/**
+	 * EditWpmlLanguageCode constructor.
+	 *
+	 * @param WpmlInterface         $wpml
+	 * @param GravityFormsInterface $gf
+	 *
+	 * @since 0.1
+	 */
+	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf ) {
+		$this->wpml = $wpml;
+		$this->gf   = $gf;
+	}
+
+	/**
+	 * Initialise our module if user can edit Gravity Forms entries, we're on the correct admin page and it hasn't been disabled
 	 *
 	 * @since 0.1
 	 */
 	public function init() {
-		$gform = GPDFAPI::get_form_class();
-
-		/* Only load if user can edit Gravity Forms entries, we're in the right location and it hasn't been disabled */
 		if (
 			apply_filters( 'gravitypdf_wpml_disable_change_language', false ) ||
-			! $gform->has_capability( 'gravityforms_edit_entries' ) ||
-			! in_array( GFForms::get_page(), [ 'entry_detail_edit', 'entry_detail' ] )
+			! $this->gf->hasCapability( 'gravityforms_edit_entries' ) ||
+			! in_array( $this->gf->getPage(), [ 'entry_detail_edit', 'entry_detail' ] )
 		) {
 			return;
 		}
@@ -84,93 +104,101 @@ class EditWpmlLanguageCode implements Helper_Interface_Actions {
 	 *
 	 * @since 1.0
 	 */
-	function addLanguageSelector( $form_id, $entry ) {
-		$currentLanguageCode = gform_get_meta( $entry['id'], 'wpml_language_code' );
-		$languages           = apply_filters( 'wpml_active_languages', '' );
+	public function addLanguageSelector( $form_id, $entry ) {
+		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
+		$languages    = $this->wpml->getSiteLanguages();
 
-		if ( GFForms::get_page() !== 'entry_detail_edit' ) {
-			$this->addLanguageSelectorView( $currentLanguageCode, $languages );
-		} elseif ( strlen( $currentLanguageCode ) > 0 ) {
-			$this->addLanguageSelectorView( $currentLanguageCode, $languages );
+		if ( $this->gf->getPage() !== 'entry_detail_edit' ) {
+			$this->addLanguageSelectorView( $languageCode, $languages );
+		} elseif ( strlen( $languageCode ) > 0 ) {
+			$this->addLanguageSelectorEdit( $languageCode, $languages );
 		}
-	}
-
-	protected function addLanguageSelectorView( $currentLanguageCode, $languages ) {
-		/* Add language if missing */
-		if ( strlen( $currentLanguageCode ) > 0 && ! isset( $languages[ $currentLanguageCode ] ) ) {
-			$languages[ $currentLanguageCode ] = [
-				'code'            => $currentLanguageCode,
-				'native_name'     => $currentLanguageCode,
-				'translated_name' => $currentLanguageCode,
-			];
-		}
-
-		ob_start();
-		?>
-        <label for="change_wpml_language"><?= esc_html__( 'Change Language:', 'gravity-pdf-for-wpml' ); ?></label>
-        <select name="gpdf_language" id="change_wpml_language" class="widefat">
-			<?php foreach ( $languages as $lang ): ?>
-                <option value="<?= esc_attr( $lang['code'] ); ?>" <?php selected( $currentLanguageCode, $lang['code'] ); ?>>
-					<?= esc_attr( $lang['native_name'] ); ?>
-					<?php if ( $lang['native_name'] !== $lang['translated_name'] ): ?>
-                        (<?= esc_attr( $lang['translated_name'] ); ?>)
-					<?php endif; ?>
-                </option>
-			<?php endforeach; ?>
-        </select>
-
-        <input name="gpdf_original_language" value="<?= esc_attr( $currentLanguageCode ); ?>" type="hidden" />
-
-        <br><br>
-
-		<?php
-		echo ob_get_clean();
-	}
-
-	protected function addLanguageSelectorEdit( $currentLanguageCode, $languages ) {
-		$nativeLang     = $languages[ $currentLanguageCode ]['native_name'];
-		$translatedLang = $languages[ $currentLanguageCode ]['translated_name'];
-
-		echo sprintf(
-			__( 'Language: %s', 'gravity-pdf-for-wpml' ),
-			( $nativeLang === $translatedLang ) ? $nativeLang : "$nativeLang ($translatedLang)"
-		);
-
-		echo '<br><br>';
 	}
 
 	/**
-	 * When the entry creator is changed, add a note to the entry
+	 * Update the Gravity Form entry language
 	 *
 	 * @param  array $form
-	 * @param  int   $entry_id
+	 * @param  int   $entryId
 	 *
-	 * @return void
+	 * @since 0.1
 	 */
-	function updateLanguage( $form, $entry_id ) {
-		global $current_user;
+	public function updateLanguage( $form, $entryId ) {
+		$newLanguageCode = isset( $_POST['gpdf_language'] ) ? $_POST['gpdf_language'] : '';
+		$oldLanguageCode = isset( $_POST['gpdf_original_language'] ) ? $_POST['gpdf_original_language'] : '';
 
-		$newLanguageCode = ( isset( $_POST['gpdf_language'] ) ) ? $_POST['gpdf_language'] : '';
-		$oldLanguageCode = ( isset( $_POST['gpdf_original_language'] ) ) ? $_POST['gpdf_original_language'] : '';
-		$languages       = apply_filters( 'wpml_active_languages', '' );
+		/* Ensure the note languages are displayed in the default site language */
+		$this->wpml->setSiteLanguage( $this->wpml->getDefaultSiteLanguage() );
+		$languages = $this->wpml->getSiteLanguages();
 
 		/* Do nothing if old/new codes are the same, or cannot find the new code */
 		if ( $newLanguageCode === $oldLanguageCode || ! isset( $languages[ $newLanguageCode ] ) ) {
 			return;
 		}
 
-		/* Update the language codes */
-		gform_update_meta( $entry_id, 'wpml_language_code', $newLanguageCode );
+		$this->gf->saveEntryLanguageCode( $entryId, $newLanguageCode );
+		$this->updateLanguageNote( $entryId, $oldLanguageCode, $newLanguageCode, $languages );
 
-		/* Add note about change to language if there is an old language code */
-		if ( ! isset( $languages[ $oldLanguageCode ] ) ) {
-			return;
+		$this->wpml->restoreSiteLanguage();
+	}
+
+	/**
+	 * Add a dropdown selector to change the Gravity Forms Entry Language
+	 *
+	 * @param string $languageCode The Gravity Forms Entry Language Code
+	 * @param array  $languages    The array of current active WPML languages
+	 *
+	 * @since 0.1
+	 */
+	protected function addLanguageSelectorEdit( $languageCode, $languages ) {
+		/*
+		 * Add current language if missing
+		 * This might occur if a site language has been removed
+		 */
+		if ( strlen( $languageCode ) > 0 && ! isset( $languages[ $languageCode ] ) ) {
+			$languages[ $languageCode ] = [
+				'code'            => $languageCode,
+				'native_name'     => $languageCode,
+				'translated_name' => $languageCode,
+			];
 		}
 
-		$userData = get_userdata( $current_user->ID );
+		ob_start();
+		include __DIR__ . '/markup/EntryLanguageEdit.php';
+		echo ob_get_clean();
+	}
 
-		$oldNativeLang     = $languages[ $oldLanguageCode ]['native_name'];
-		$oldTranslatedLang = $languages[ $oldLanguageCode ]['translated_name'];
+	/**
+	 * Show the current Gravity Forms Entry Language
+	 *
+	 * @param string $languageCode The Gravity Forms Entry Language Code
+	 * @param array  $languages    The array of current active WPML languages
+	 *
+	 * @since 0.1
+	 */
+	protected function addLanguageSelectorView( $languageCode, $languages ) {
+		$nativeLang     = isset( $languages[ $languageCode ] ) ? $languages[ $languageCode ]['native_name'] : $languageCode;
+		$translatedLang = isset( $languages[ $languageCode ] ) ? $languages[ $languageCode ]['translated_name'] : $languageCode;
+		$language       = ( $nativeLang === $translatedLang ) ? $translatedLang : "$translatedLang ($nativeLang)";
+
+		ob_start();
+		include __DIR__ . '/markup/EntryLanguageView.php';
+		echo ob_get_clean();
+	}
+
+	/**
+	 * Save a note to the Gravity Form Entry about the language change
+	 *
+	 * @param int    $entryId         The Gravity Forms Entry ID
+	 * @param string $oldLanguageCode The old Gravity Forms Entry Language Code
+	 * @param string $newLanguageCode The new Gravity Forms Entry Language Code
+	 * @param array  $languages       The array of current active WPML languages
+	 *
+	 * @since 0.1
+	 */
+	protected function updateLanguageNote( $entryId, $oldLanguageCode, $newLanguageCode, $languages ) {
+		$oldNativeLang     = isset( $languages[ $oldLanguageCode ] ) ? $languages[ $oldLanguageCode ]['native_name'] : $oldLanguageCode;
+		$oldTranslatedLang = isset( $languages[ $oldLanguageCode ] ) ? $languages[ $oldLanguageCode ]['translated_name'] : $oldLanguageCode;
 		$newNativeLang     = $languages[ $newLanguageCode ]['native_name'];
 		$newTranslatedLang = $languages[ $newLanguageCode ]['translated_name'];
 
@@ -180,7 +208,6 @@ class EditWpmlLanguageCode implements Helper_Interface_Actions {
 			( $newNativeLang === $newTranslatedLang ) ? $newNativeLang : "$newNativeLang ($newTranslatedLang)"
 		);
 
-		GFFormsModel::add_note( $entry_id, $current_user->ID, $userData->display_name, $message, 'note' );
+		$this->gf->addNote( $entryId, $message );
 	}
-
 }

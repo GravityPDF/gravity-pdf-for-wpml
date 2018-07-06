@@ -1,14 +1,15 @@
 <?php
 
-namespace GFPDF\Plugins\WPML\Form;
+namespace GFPDF\Plugins\WPML\Pdf;
 
-use GFPDF\Helper\Helper_Interface_Actions;
+use GFPDF\Helper\Helper_Interface_Filters;
+use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 
 /**
- * @package     Gravity PDF for WPML
+ * @package     Gravity PDF Developer Toolkit
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
- * @since       0.1
+ * @since       1.0
  */
 
 /* Exit if accessed directly */
@@ -17,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
-    This file is part of Gravity PDF for WPML.
+    This file is part of Gravity PDF Developer Toolkit.
 
     Copyright (c) 2018, Blue Liquid Designs
 
@@ -36,52 +37,53 @@ if ( ! defined( 'ABSPATH' ) ) {
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/**
- * Class StoreWpmlLanguage
- *
- * @package GFPDF\Plugins\WPML\Form
- */
-class StoreWpmlLanguage implements Helper_Interface_Actions {
+class FormData implements Helper_Interface_Filters {
 
-	/**
-	 * @var GravityFormsInterface
-	 * @since 0.1
-	 */
 	protected $gf;
 
-	/**
-	 * StoreWpmlLanguage constructor.
-	 *
-	 * @param GravityFormsInterface $gf
-	 *
-	 * @since 0.1
-	 */
 	public function __construct( GravityFormsInterface $gf ) {
 		$this->gf = $gf;
 	}
 
 	/**
-	 * @since 0.1
+	 * Initialise class
+	 *
+	 * @return void
+	 *
+	 * @since 1.0
 	 */
 	public function init() {
-		$this->add_actions();
+		$this->add_filters();
 	}
 
 	/**
-	 * @since 0.1
+	 * Add WordPress filters
+	 *
+	 * @return void
+	 *
+	 * @since 1.0
 	 */
-	public function add_actions() {
-		add_action( 'gform_entry_created', [ $this, 'saveLanguageCode' ], 10, 1 );
+	public function add_filters() {
+		add_filter( 'gfpdf_form_data', [ $this, 'addLanguageKey' ], 10, 2 );
 	}
 
 	/**
-	 * Store the current user language with the Gravity Form entry
+	 * Add the language code to the $form_data array
 	 *
-	 * @param array $entry
+	 * @param array $data  The Gravity PDF Form Data Object
+	 * @param array $entry The Gravity Forms Entry Object
+	 *
+	 * @return array
 	 *
 	 * @since 0.1
 	 */
-	public function saveLanguageCode( $entry ) {
-		$this->gf->saveEntryLanguageCode( $entry['id'], ICL_LANGUAGE_CODE );
+	public function addLanguageKey( $data, $entry ) {
+		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
+
+		if ( isset( $data['misc'] ) && is_array( $data['misc'] ) ) {
+			$data['misc']['language_code'] = $languageCode;
+		}
+
+		return $data;
 	}
 }

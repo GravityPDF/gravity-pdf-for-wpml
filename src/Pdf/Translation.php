@@ -40,23 +40,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 */
 
 /**
- * Class Notifications
+ * Class Translation
  *
  * @package GFPDF\Plugins\WPML\Pdf
  */
-class Notifications implements Helper_Interface_Actions, Helper_Interface_Filters {
-
-	public $currentLanguage = '';
+class Translation implements Helper_Interface_Actions, Helper_Interface_Filters {
 
 	/**
 	 * @var WpmlInterface
+	 * @since 0.1
 	 */
 	protected $wpml;
 
 	/**
 	 * @var GravityFormsInterface
+	 * @since 0.1
 	 */
 	protected $gf;
+
+	/**
+	 * Holds the current entry language key for the PDF being generated
+	 *
+	 * @var string
+	 * @since 0.1
+	 */
+	public $currentLanguage = '';
 
 	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf ) {
 		$this->wpml = $wpml;
@@ -77,43 +85,68 @@ class Notifications implements Helper_Interface_Actions, Helper_Interface_Filter
 	 * @since 0.1
 	 */
 	public function add_actions() {
-		/* TODO - Add these actions into core plugin */
-		add_action( 'gfpdf_pre_generate_and_save_pdf', [ $this, 'prePdfGeneration' ], 10, 4 );
+		add_action( 'gfpdf_pre_pdf_generation', [ $this, 'prePdfViewOrDownload' ] );
+
+		/* @TODO - Add these actions into core plugin (Model_PDF, api.php) */
+		add_action( 'gfpdf_pre_generate_and_save_pdf_notification', [ $this, 'prePdfGeneration' ], 10, 2 );
+		add_action( 'gfpdf_pre_generate_and_save_pdf', [ $this, 'prePdfGeneration' ], 10, 2 );
+
+		add_action( 'gfpdf_post_generate_and_save_pdf_notification', [ $this, 'postPdfGeneration' ] );
 		add_action( 'gfpdf_post_generate_and_save_pdf', [ $this, 'postPdfGeneration' ] );
 	}
 
+	/**
+	 * @since 0.1
+	 */
 	public function add_filters() {
 		add_filter( 'gform_form_post_get_meta', [ $this, 'translateGravityForm' ] );
 	}
 
-	public function prePdfGeneration( $notifications, $entry, $pdfSettings, $form ) {
+
+	public function prePdfViewOrDownload( $form, $entry ) {
+		$this->gf->flushCurrentGravityForm();
+		$this->currentLanguage = ICL_LANGUAGE_CODE;
+	}
+
+	/**
+	 * Check if the entry translated language is valid, flush the GF cache and store the language code
+	 *
+	 * @param array $form  The Gravity Forms object
+	 * @param array $entry The Gravity Forms entry object
+	 *
+	 * @since 0.1
+	 */
+	public function prePdfGeneration( $form, $entry ) {
 		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
-		if ( $this->wpml->hasTranslatedGravityForm( $form, $languageCode ) ) {
+		if ( ! $this->wpml->hasTranslatedGravityForm( $form, $languageCode ) ) {
 			return;
 		}
 
 		/* Ensure we can translate the form object */
-		/* @TODO - add to GF object */
-		GFFormsModel::flush_current_forms();
+		$this->gf->flushCurrentGravityForm();
 		$this->currentLanguage = $languageCode;
 	}
 
+	/**
+	 * Flush the GF cache and unset the language code
+	 */
 	public function postPdfGeneration() {
-		/* @TODO - add to GF object */
-		GFFormsModel::flush_current_forms();
+		$this->gf->flushCurrentGravityForm();
 		$this->currentLanguage = '';
 	}
 
-	/* Get the WPML Gravity Forms class and translate the form */
+	/**
+	 * Get the WPML Gravity Forms class and translate the form
+	 *
+	 * @param array $form The Gravity Forms object
+	 *
+	 * @return array
+	 */
 	public function translateGravityForm( $form ) {
 		if ( strlen( $this->currentLanguage ) === 0 ) {
 			return $form;
 		}
 
-		$this->wpml->setSiteLanguage( $this->currentLanguage );
-		$form = $this->wpml->getTranslatedGravityForm( $form );
-		$this->wpml->restoreSiteLanguage();
-
-		return $form;
+		return $this->wpml->getTranslatedGravityForm( $form, $this->currentLanguage );
 	}
 }

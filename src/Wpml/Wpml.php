@@ -10,6 +10,8 @@ namespace GFPDF\Plugins\WPML\Wpml;
  */
 
 /* Exit if accessed directly */
+use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -57,6 +59,28 @@ class Wpml implements WpmlInterface {
 	}
 
 	/**
+	 * Get the default site language
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function getDefaultSiteLanguage() {
+		return apply_filters( 'wpml_default_language', '' );
+	}
+
+	/**
+	 * Get the current site language
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function getCurrentSiteLanguage() {
+		return apply_filters( 'wpml_current_language', '' );
+	}
+
+	/**
 	 * Return all active WPML languages. Don't skip languages with missing translations
 	 *
 	 * @return array
@@ -64,7 +88,7 @@ class Wpml implements WpmlInterface {
 	 * @since 0.1
 	 */
 	public function getSiteLanguages() {
-		return apply_filters( 'wpml_active_languages', '', [ 'skip_missing' => 0, 'orderby' => 'name' ] );
+		return apply_filters( 'wpml_active_languages', '', [ 'skip_missing' => 0 ] );
 	}
 
 	/**
@@ -118,9 +142,10 @@ class Wpml implements WpmlInterface {
 	public function getGravityFormLanguages( $form ) {
 		$gfLanguages        = [];
 		$availableLanguages = $this->getSiteLanguages();
+		$defaultLanguage    = $this->getDefaultSiteLanguage();
 
 		foreach ( $availableLanguages as $languageCode => $language ) {
-			if ( $this->hasTranslatedGravityForm( $form, $languageCode ) ) {
+			if ( $languageCode === $defaultLanguage || $this->hasTranslatedGravityForm( $form, $languageCode ) ) {
 				$gfLanguages[ $languageCode ] = $language;
 			}
 		}
@@ -139,7 +164,10 @@ class Wpml implements WpmlInterface {
 	 * @since 0.1
 	 */
 	public function hasTranslatedGravityForm( $form, $languageCode ) {
-		/* @TODO - check if the form object is already translated */
+		if ( $this->getDefaultSiteLanguage() === $languageCode ) {
+			return true;
+		}
+
 		return $form !== $this->getTranslatedGravityForm( $form, $languageCode );
 	}
 

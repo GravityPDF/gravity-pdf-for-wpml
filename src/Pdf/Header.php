@@ -3,7 +3,6 @@
 namespace GFPDF\Plugins\WPML\Pdf;
 
 use GFPDF\Helper\Helper_Interface_Filters;
-use GFPDF\Helper\Helper_Templates;
 
 /**
  * @package     Gravity PDF Developer Toolkit

@@ -56,6 +56,24 @@ interface WpmlInterface {
 	public function getTranslatedUrl( $url, $languageCode );
 
 	/**
+	 * Get the default site language
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function getDefaultSiteLanguage();
+
+	/**
+	 * Get the current site language
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function getCurrentSiteLanguage();
+
+	/**
 	 * Return all active WPML languages
 	 *
 	 * @return array

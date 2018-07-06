@@ -81,4 +81,42 @@ interface GravityFormsInterface {
 	 * @since 0.1
 	 */
 	public function getEntryLanguageCode( $entryId );
+
+	/**
+	 * Flush the current Gravity Form from the cache
+	 *
+	 * @since 0.1
+	 */
+	public function flushCurrentGravityForm();
+
+	/**
+	 * Check if the current user has a particular capability
+	 *
+	 * @param string   $capability
+	 * @param int|null $userId
+	 *
+	 * @return bool
+	 *
+	 * @since 0.1
+	 */
+	public function hasCapability( $capability, $userId = null );
+
+	/**
+	 * Get the page the user is currently on
+	 *
+	 * @return string The Gravity Forms page, or an empty string
+	 *
+	 * @since 0.1
+	 */
+	public function getPage();
+
+	/**
+	 * Add a note to the Gravity Form Entry
+	 *
+	 * @param int    $entryId
+	 * @param string $note
+	 *
+	 * @since 0.1
+	 */
+	public function addNote( $entryId, $note );
 }
