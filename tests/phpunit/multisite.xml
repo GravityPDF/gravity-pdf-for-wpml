@@ -25,7 +25,6 @@
                 <directory suffix=".php">../../tests/</directory>
                 <directory suffix=".php">../../tmp/</directory>
                 <directory suffix=".php">../../vendor/</directory>
-                <directory suffix=".php">../../bower_components/</directory>
                 <directory suffix=".php">../../node_modules/</directory>
             </exclude>
         </whitelist>

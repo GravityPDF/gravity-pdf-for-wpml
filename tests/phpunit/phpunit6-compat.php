@@ -1,7 +1,6 @@
 <?php
 
 if ( version_compare( PHPUnit\Runner\Version::id(), '6.0', '>=' ) ) {
-
 	class_alias( 'PHPUnit\Framework\TestCase', 'PHPUnit_Framework_TestCase' );
 	class_alias( 'PHPUnit\Framework\Exception', 'PHPUnit_Framework_Exception' );
 	class_alias( 'PHPUnit\Framework\ExpectationFailedException', 'PHPUnit_Framework_ExpectationFailedException' );
@@ -32,7 +31,5 @@ if ( version_compare( PHPUnit\Runner\Version::id(), '6.0', '>=' ) ) {
 
 			return array_unique( $tickets );
 		}
-
 	}
-
 }

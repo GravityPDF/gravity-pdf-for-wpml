@@ -12,7 +12,7 @@ if ( function_exists( 'xdebug_disable' ) ) {
  *
  * @since 4.0
  */
-class GravityPDF_WPML_Unit_Tests_Bootstrap {
+class GravityPdfWpmlUnitTestsBootstrap {
 
 	/** @var string directory where wordpress-tests-lib is installed */
 	public $wp_tests_dir;
@@ -42,8 +42,6 @@ class GravityPDF_WPML_Unit_Tests_Bootstrap {
 		/* load Gravity PDF */
 		tests_add_filter( 'muplugins_loaded', [ $this, 'load' ] );
 
-		tests_add_filter( 'after_setup_theme', [ $this, 'disable_deprecated_warnings' ], 20 );
-
 		/* Migration fixer for PHPUnit 6 when not included in the WP Test Environment */
 		if ( ! is_file( $this->wp_tests_dir . '/includes/phpunit6-compat.php' ) && class_exists( 'PHPUnit\Runner\Version' ) ) {
 			require_once dirname( __FILE__ ) . '/phpunit6-compat.php';
@@ -51,12 +49,6 @@ class GravityPDF_WPML_Unit_Tests_Bootstrap {
 
 		/* load the WP testing environment */
 		require_once( $this->wp_tests_dir . '/includes/bootstrap.php' );
-	}
-
-
-	public function disable_deprecated_warnings() {
-		/* Disable deprecated warnings */
-		error_reporting( E_ALL ^ E_DEPRECATED );
 	}
 
 	/**

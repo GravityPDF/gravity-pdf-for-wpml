@@ -75,14 +75,16 @@ class Bootstrap extends Helper_Abstract_Addon {
 		$gf   = new GravityForms();
 		$pdf  = new Pdf( $gf );
 
-		$classes = array_merge( $classes, [
-			new Header(),
-			new DownloadLinks( $wpml, $gf, $pdf ),
-			new Translation( $wpml, $gf ),
-			new StoreWpmlLanguage( $wpml, $gf ),
-			new EditWpmlLanguageCode( $wpml, $gf ),
-			new FormData( $gf ),
-		] );
+		$classes = array_merge(
+			$classes, [
+				new Header(),
+				new DownloadLinks( $wpml, $gf, $pdf ),
+				new Translation( $wpml, $gf ),
+				new StoreWpmlLanguage( $wpml, $gf ),
+				new EditWpmlLanguageCode( $wpml, $gf ),
+				new FormData( $gf ),
+			]
+		);
 
 		/* Run the setup */
 		parent::init( $classes );
@@ -120,18 +122,20 @@ class Bootstrap extends Helper_Abstract_Addon {
 $name = 'Gravity PDF for WPML';
 $slug = 'gravity-pdf-for-wpml';
 
-$plugin = apply_filters( 'gfpdf_wpml_initialise', new Bootstrap(
-	$slug,
-	$name,
-	'Gravity PDF',
-	GFPDF_PDF_WPML_VERSION,
-	GFPDF_PDF_WPML_FILE,
-	GPDFAPI::get_data_class(),
-	GPDFAPI::get_options_class(),
-	new Helper_Singleton(),
-	new Helper_Logger( $slug, $name ),
-	new Helper_Notices()
-) );
+$plugin = apply_filters(
+	'gfpdf_wpml_initialise', new Bootstrap(
+		$slug,
+		$name,
+		'Gravity PDF',
+		GFPDF_PDF_WPML_VERSION,
+		GFPDF_PDF_WPML_FILE,
+		GPDFAPI::get_data_class(),
+		GPDFAPI::get_options_class(),
+		new Helper_Singleton(),
+		new Helper_Logger( $slug, $name ),
+		new Helper_Notices()
+	)
+);
 
 $plugin->set_edd_download_id( '' );
 $plugin->set_addon_documentation_slug( 'shop-plugin-wpml-add-on' );
