@@ -8,6 +8,8 @@ use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
+ * Handles translated Gravity Forms links and includes them on the Gravity Forms Entry Details Page
+ *
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License

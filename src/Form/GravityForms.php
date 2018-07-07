@@ -8,6 +8,8 @@ use GFFormsModel;
 use GFForms;
 
 /**
+ * Handles all the Gravity Forms Interaction
+ *
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License

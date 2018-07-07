@@ -5,6 +5,8 @@ namespace GFPDF\Plugins\WPML\Exceptions;
 use Exception;
 
 /**
+ * Default Plugin Exception
+ *
  * @package     Gravity PDF Previewer
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License

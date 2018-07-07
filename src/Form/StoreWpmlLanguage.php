@@ -6,6 +6,8 @@ use GFPDF\Helper\Helper_Trait_Logger;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
+ * Save the WPML Language Code with Gravity Forms Entry
+ *
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License

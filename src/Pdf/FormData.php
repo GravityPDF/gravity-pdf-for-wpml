@@ -5,6 +5,8 @@ namespace GFPDF\Plugins\WPML\Pdf;
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 
 /**
+ * Add WPML Language Code to $form_data array
+ *
  * @package     Gravity PDF Developer Toolkit
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License

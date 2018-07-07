@@ -3,6 +3,8 @@
 namespace GFPDF\Plugins\WPML\Pdf;
 
 /**
+ * Register Custom WPML PDF Template Header
+ *
  * @package     Gravity PDF Developer Toolkit
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
