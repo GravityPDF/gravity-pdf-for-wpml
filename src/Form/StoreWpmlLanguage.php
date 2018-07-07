@@ -2,6 +2,7 @@
 
 namespace GFPDF\Plugins\WPML\Form;
 
+use GFPDF\Helper\Helper_Trait_Logger;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
@@ -11,14 +12,10 @@ use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -48,13 +45,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class StoreWpmlLanguage {
 
 	/**
+	 * Including Logging Support
+	 *
+	 * @since 0.1
+	 */
+	use Helper_Trait_Logger;
+
+	/**
 	 * @var WpmlInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $wpml;
 
 	/**
 	 * @var GravityFormsInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $gf;
@@ -76,14 +82,14 @@ class StoreWpmlLanguage {
 	 * @since 0.1
 	 */
 	public function init() {
-		$this->addActions();
+		$this->add_actions();
 	}
 
 	/**
 	 * @since 0.1
 	 */
-	public function addActions() {
-		add_action( 'gform_entry_created', [ $this, 'saveLanguageCode' ], 10, 1 );
+	public function add_actions() {
+		add_action( 'gform_entry_created', [ $this, 'save_language_code' ], 10, 1 );
 	}
 
 	/**
@@ -93,7 +99,9 @@ class StoreWpmlLanguage {
 	 *
 	 * @since 0.1
 	 */
-	public function saveLanguageCode( $entry ) {
-		$this->gf->saveEntryLanguageCode( $entry['id'], $this->wpml->getCurrentSiteLanguage() );
+	public function save_language_code( $entry ) {
+		$language_code = $this->wpml->get_current_site_language();
+		$this->gf->save_entry_language_code( $entry['id'], $language_code );
+		$this->logger->notice( sprintf( 'WPML language "%1$s" saved to Gravity Forms Entry "%2$s"', $entry['id'], $language_code ) );
 	}
 }

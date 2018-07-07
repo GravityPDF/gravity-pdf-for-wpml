@@ -2,6 +2,7 @@
 
 namespace GFPDF\Plugins\WPML\Pdf;
 
+use GFPDF\Helper\Helper_Trait_Logger;
 use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
 use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
@@ -13,14 +14,10 @@ use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -50,19 +47,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 class DownloadLinks {
 
 	/**
+	 * Including Logging Support
+	 *
+	 * @since 0.1
+	 */
+	use Helper_Trait_Logger;
+
+	/**
 	 * @var WpmlInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $wpml;
 
 	/**
 	 * @var GravityFormsInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $gf;
 
 	/**
 	 * @var PdfInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $pdf;
@@ -71,11 +78,12 @@ class DownloadLinks {
 	 * Holds a cache of the active PDF list
 	 *
 	 * @var array
+	 *
 	 * @since    0.1
 	 *
 	 * @Internal This prevents us reading the template headers from the disk multiple times
 	 */
-	protected $pdfListCache = [];
+	protected $pdf_list_cache = [];
 
 	/**
 	 * DownloadLinks constructor.
@@ -84,7 +92,7 @@ class DownloadLinks {
 	 * @param GravityFormsInterface $gf
 	 * @param PdfInterface          $pdf
 	 *
-	 * @since 1.0
+	 * @since 0.1
 	 */
 	public function __construct( WpmlInterface $wpml, GravityFormsInterface $gf, PdfInterface $pdf ) {
 		$this->wpml = $wpml;
@@ -98,22 +106,22 @@ class DownloadLinks {
 	 * @since 0.1
 	 */
 	public function init() {
-		$this->addActions();
-		$this->addFilters();
+		$this->add_actions();
+		$this->add_filters();
 	}
 
 	/**
 	 * @since 0.1
 	 */
-	public function addActions() {
-		add_action( 'gform_entry_info', [ $this, 'addLinksToEntryDetails' ], 9, 2 );
+	public function add_actions() {
+		add_action( 'gform_entry_info', [ $this, 'add_links_to_entry_details' ], 9, 2 );
 	}
 
 	/**
 	 * @since 0.1
 	 */
-	public function addFilters() {
-		add_filter( 'gfpdf_get_pdf_url', [ $this, 'getPdfUrlForLanguage' ], 10, 3 );
+	public function add_filters() {
+		add_filter( 'gfpdf_get_pdf_url', [ $this, 'get_pdf_url_for_language' ], 10, 3 );
 	}
 
 	/**
@@ -127,25 +135,30 @@ class DownloadLinks {
 	 *
 	 * @since 0.1
 	 */
-	public function getPdfUrlForLanguage( $url, $pid, $entry_id ) {
+	public function get_pdf_url_for_language( $url, $pid, $entry_id ) {
 		/* @TODO include trailing slash fix in get_pdf_url() */
 
 		try {
-			$entry = $this->gf->getEntry( $entry_id );
-			$pdf   = $this->pdf->getPdf( $entry['form_id'], $pid );
+			$entry = $this->gf->get_entry( $entry_id );
+			$pdf   = $this->pdf->get_pdf( $entry['form_id'], $pid );
 		} catch ( GpdfWpmlException $e ) {
+			$this->logger->error( $e->getMessage(), [
+				'file' => $e->getFile(),
+				'line' => $e->getLine(),
+			] );
+
 			return $url;
 		}
 
 		/* Get the PDF Group */
-		$templateInfo = $this->pdf->getTemplateInfoById( $pdf['template'] );
-		if ( isset( $templateInfo['group'] ) ) {
-			$pdf['group'] = $templateInfo['group'];
+		$template_info = $this->pdf->get_template_info_by_id( $pdf['template'] );
+		if ( isset( $template_info['group'] ) ) {
+			$pdf['group'] = $template_info['group'];
 		}
 
 		/* Translate the URL if the template is WPML-compatible */
-		if ( $this->isTemplateWpmlCompatible( $pdf ) ) {
-			return $this->wpml->getTranslatedUrl( $url, $this->gf->getEntryLanguageCode( $entry['id'] ) );
+		if ( $this->is_template_wpml_compatible( $pdf ) ) {
+			return $this->wpml->get_translated_url( $url, $this->gf->get_entry_language_code( $entry['id'] ) );
 		}
 
 		return $url;
@@ -160,59 +173,64 @@ class DownloadLinks {
 	 *
 	 * @since 0.1
 	 */
-	public function addLinksToEntryDetails( $form_id, $entry ) {
-		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
-		if ( ! $this->wpml->hasSiteLanguage( $languageCode ) ) {
+	public function add_links_to_entry_details( $form_id, $entry ) {
+		$language_code = $this->gf->get_entry_language_code( $entry['id'] );
+		if ( ! $this->wpml->has_site_language( $language_code ) ) {
 			return;
 		}
 
 		try {
-			$form = $this->gf->getForm( $form_id );
+			$form = $this->gf->get_form( $form_id );
 		} catch ( GpdfWpmlException $e ) {
+			$this->logger->error( $e->getMessage(), [
+				'file' => $e->getFile(),
+				'line' => $e->getLine(),
+			] );
+
 			return;
 		}
 
-		$pdfList = $this->getPdfUrls(
-			$this->getPdfList( $form, $entry ),
+		$pdf_list = $this->get_pdf_urls(
+			$this->get_pdf_list( $form, $entry ),
 			$form,
-			$languageCode
+			$language_code
 		);
 
 		include __DIR__ . '/markup/PdfEntryDetailsLinks.php';
 
-		$this->pdf->removeFilter( 'gform_entry_info', 'Model_PDF', 'view_pdf_entry_detail' );
+		$this->pdf->remove_filter( 'gform_entry_info', 'Model_PDF', 'view_pdf_entry_detail' );
 	}
 
 	/**
 	 * Get the list of available PDFs and their associated translation URLs
 	 *
-	 * @param array  $pdfList             The list of Gravity PDF URLs
-	 * @param array  $form                The Gravity Forms form object
-	 * @param string $currentLanguageCode The
+	 * @param array  $pdf_list      The list of Gravity PDF URLs
+	 * @param array  $form          The Gravity Forms form object
+	 * @param string $language_code The
 	 *
 	 * @return array
 	 */
-	protected function getPdfUrls( $pdfList, $form, $currentLanguageCode ) {
-		$languages = ! is_wp_error( $form ) ? $this->wpml->getGravityFormLanguages( $form ) : $this->wpml->getSiteLanguages();
-		$pdfAction = $this->getPdfDefaultAction();
+	protected function get_pdf_urls( $pdf_list, $form, $language_code ) {
+		$languages  = ! is_wp_error( $form ) ? $this->wpml->get_gravityform_languages( $form ) : $this->wpml->get_site_languages();
+		$pdf_action = $this->get_pdf_default_action();
 
 		/* Remove the current language if it exists (handled via main links) */
-		if ( isset( $languages[ $currentLanguageCode ] ) ) {
-			unset( $languages[ $currentLanguageCode ] );
+		if ( isset( $languages[ $language_code ] ) ) {
+			unset( $languages[ $language_code ] );
 		}
 
-		foreach ( $pdfList as &$pdf ) {
+		foreach ( $pdf_list as &$pdf ) {
 			$pdf['languages'] = [];
 
-			if ( ! $this->isTemplateWpmlCompatible( $pdf ) ) {
+			if ( ! $this->is_template_wpml_compatible( $pdf ) ) {
 				continue;
 			}
 
 			foreach ( $languages as $lang ) {
-				$url = $this->wpml->getTranslatedUrl( $pdf[ $pdfAction ], $lang['code'] );
+				$url = $this->wpml->get_translated_url( $pdf[ $pdf_action ], $lang['code'] );
 
 				/* Only show if the URL has been successfully translated */
-				if ( $url !== $pdf[ $pdfAction ] ) {
+				if ( $url !== $pdf[ $pdf_action ] ) {
 					$pdf['languages'][] = sprintf(
 						'<a href="%1$s">%2$s</a>',
 						esc_attr( $url ),
@@ -222,7 +240,7 @@ class DownloadLinks {
 			}
 		}
 
-		return $pdfList;
+		return $pdf_list;
 	}
 
 	/**
@@ -237,47 +255,56 @@ class DownloadLinks {
 	 *
 	 * @Internal We're overriding the standard Gravity PDF function to overload the list with additional data
 	 */
-	protected function getPdfList( $form, $entry ) {
+	protected function get_pdf_list( $form, $entry ) {
 		$cache_id = 'pdf-list-' . $form['id'] . '-' . $entry['id'];
-		if ( isset( $this->pdfListCache[ $cache_id ] ) ) {
-			return $this->pdfListCache[ $cache_id ];
+		if ( isset( $this->pdf_list_cache[ $cache_id ] ) ) {
+			$this->logger->notice( sprintf( 'Retrieving PDF list from cache "%s"', $cache_id ) );
+			return $this->pdf_list_cache[ $cache_id ];
 		}
 
-		$pdfList = [];
+		$pdf_list = [];
 
 		try {
-			$activePdfs = $this->pdf->getActivePdfs( $entry['id'] );
+			$active_pdfs = $this->pdf->get_active_pdfs( $entry['id'] );
 		} catch ( GpdfWpmlException $e ) {
-			return $pdfList;
+			$this->logger->error( $e->getMessage(), [
+				'file' => $e->getFile(),
+				'line' => $e->getLine(),
+			] );
+
+			return $pdf_list;
 		}
 
-		if ( ! empty( $activePdfs ) ) {
-			foreach ( $activePdfs as $settings ) {
-				$templateInfo = $this->pdf->getTemplateInfoById( $settings['template'] );
+		if ( ! empty( $active_pdfs ) ) {
+			foreach ( $active_pdfs as $settings ) {
+				$template_info = $this->pdf->get_template_info_by_id( $settings['template'] );
 
 				/* Add additional information about the PDFs to this array for use with the `gfpdf_wpml_group_support` filter */
 				try {
-					$pdfList[] = [
+					$pdf_list[] = [
 						'pid'      => $settings['id'],
 						'template' => $settings['template'],
-						'name'     => $this->pdf->getPdfName( $entry['id'], $settings['id'] ),
-						'view'     => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], false ),
-						'download' => $this->pdf->getPdfUrl( $entry['id'], $settings['id'], true ),
-						'group'    => $templateInfo['group'],
-						'wpml'     => $templateInfo['wpml'],
+						'name'     => $this->pdf->get_pdf_name( $entry['id'], $settings['id'] ),
+						'view'     => $this->pdf->get_pdf_url( $entry['id'], $settings['id'], false ),
+						'download' => $this->pdf->get_pdf_url( $entry['id'], $settings['id'], true ),
+						'group'    => $template_info['group'],
+						'wpml'     => $template_info['wpml'],
 					];
 				} catch ( GpdfWpmlException $e ) {
-					continue;
+					$this->logger->error( $e->getMessage(), [
+						'file' => $e->getFile(),
+						'line' => $e->getLine(),
+					] );
 				}
 			}
 		}
 
-		$pdfList = apply_filters( 'gfpdf_get_pdf_display_list', $pdfList, $entry, $form );
+		$pdf_list = apply_filters( 'gfpdf_get_pdf_display_list', $pdf_list, $entry, $form );
 
 		/* Store in cache */
-		$this->pdfListCache[ $cache_id ] = $pdfList;
+		$this->pdf_list_cache[ $cache_id ] = $pdf_list;
 
-		return $pdfList;
+		return $pdf_list;
 	}
 
 	/**
@@ -291,8 +318,7 @@ class DownloadLinks {
 	 *
 	 * @since    0.1
 	 */
-	protected function isTemplateWpmlCompatible( $pdf ) {
-
+	protected function is_template_wpml_compatible( $pdf ) {
 		/* Check if has the `@WPML: true` header */
 		if ( isset( $pdf['wpml'] ) && $pdf['wpml'] === 'true' ) {
 			return true;
@@ -300,8 +326,8 @@ class DownloadLinks {
 
 		/* Check if group is Core/Universal which has WPML support out of the box */
 		if ( isset( $pdf['group'] ) ) {
-			$supportedTemplateGroups = apply_filters( 'gfpdf_wpml_group_support', [ 'Core', 'Universal (Premium)' ], $pdf );
-			if ( in_array( $pdf['group'], $supportedTemplateGroups, true ) ) {
+			$supported_template_groups = apply_filters( 'gfpdf_wpml_group_support', [ 'Core', 'Universal (Premium)' ], $pdf );
+			if ( in_array( $pdf['group'], $supported_template_groups, true ) ) {
 				return true;
 			}
 		}
@@ -316,7 +342,7 @@ class DownloadLinks {
 	 *
 	 * @since 0.1
 	 */
-	protected function getPdfDefaultAction() {
-		return strtolower( $this->pdf->getOption( 'default_action', 'view' ) );
+	protected function get_pdf_default_action() {
+		return strtolower( $this->pdf->get_option( 'default_action', 'view' ) );
 	}
 }

@@ -9,14 +9,10 @@ namespace GFPDF\Plugins\WPML\Pdf;
  * @since       1.0
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -53,7 +49,7 @@ class Header {
 	 * @since 1.0
 	 */
 	public function init() {
-		$this->addFilters();
+		$this->add_filters();
 	}
 
 	/**
@@ -63,8 +59,8 @@ class Header {
 	 *
 	 * @since 1.0
 	 */
-	public function addFilters() {
-		add_filter( 'gfpdf_template_header_details', [ $this, 'addWpmlHeader' ] );
+	public function add_filters() {
+		add_filter( 'gfpdf_template_header_details', [ $this, 'add_wpml_header' ] );
 	}
 
 	/**
@@ -76,7 +72,7 @@ class Header {
 	 *
 	 * @since 0.1
 	 */
-	public function addWpmlHeader( $headers ) {
+	public function add_wpml_header( $headers ) {
 		$headers['wpml'] = 'WPML';
 
 		return $headers;

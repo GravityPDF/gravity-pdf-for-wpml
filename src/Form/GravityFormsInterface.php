@@ -11,14 +11,10 @@ use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -50,7 +46,7 @@ interface GravityFormsInterface {
 	/**
 	 * Get a Gravity Form object
 	 *
-	 * @param int $formId The Gravity Form ID
+	 * @param int $form_id The Gravity Form ID
 	 *
 	 * @return array
 	 *
@@ -58,12 +54,12 @@ interface GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getForm( $formId );
+	public function get_form( $form_id );
 
 	/**
 	 * Get a Gravity Form Entry object
 	 *
-	 * @param int $entryId The Gravity Form Entry ID
+	 * @param int $entry_id The Gravity Form Entry ID
 	 *
 	 * @return array
 	 *
@@ -71,47 +67,47 @@ interface GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getEntry( $entryId );
+	public function get_entry( $entry_id );
 
 	/**
 	 * Save the language code with the entry
 	 *
-	 * @param int    $entryId      The Gravity Form Entry ID
-	 * @param string $languageCode The two-character language code
+	 * @param int    $entry_id      The Gravity Form Entry ID
+	 * @param string $language_code The two-character language code
 	 *
 	 * @since 0.1
 	 */
-	public function saveEntryLanguageCode( $entryId, $languageCode );
+	public function save_entry_language_code( $entry_id, $language_code );
 
 	/**
 	 * Get the language code from the entry
 	 *
-	 * @param int $entryId The Gravity Form Entry ID
+	 * @param int $entry_id The Gravity Form Entry ID
 	 *
 	 * @return string
 	 *
 	 * @since 0.1
 	 */
-	public function getEntryLanguageCode( $entryId );
+	public function get_entry_language_code( $entry_id );
 
 	/**
 	 * Flush the current Gravity Form from the cache
 	 *
 	 * @since 0.1
 	 */
-	public function flushCurrentGravityForm();
+	public function flush_current_gravityform();
 
 	/**
 	 * Check if the current user has a particular capability
 	 *
 	 * @param string   $capability
-	 * @param int|null $userId
+	 * @param int|null $user_id
 	 *
 	 * @return bool
 	 *
 	 * @since 0.1
 	 */
-	public function hasCapability( $capability, $userId = null );
+	public function has_capability( $capability, $user_id = null );
 
 	/**
 	 * Get the page the user is currently on
@@ -120,15 +116,15 @@ interface GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getPage();
+	public function get_page();
 
 	/**
 	 * Add a note to the Gravity Form Entry
 	 *
-	 * @param int    $entryId
+	 * @param int    $entry_id
 	 * @param string $note
 	 *
 	 * @since 0.1
 	 */
-	public function addNote( $entryId, $note );
+	public function add_note( $entry_id, $note );
 }

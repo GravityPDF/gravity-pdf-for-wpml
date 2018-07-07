@@ -44,14 +44,14 @@ interface WpmlInterface {
 	/**
 	 * Convert the URL to its translated counterpart
 	 *
-	 * @param string $url          The URL to convert
-	 * @param string $languageCode The two-character language code
+	 * @param string $url           The URL to convert
+	 * @param string $language_code The two-character language code
 	 *
 	 * @return boolean
 	 *
 	 * @since 0.1
 	 */
-	public function getTranslatedUrl( $url, $languageCode );
+	public function get_translated_url( $url, $language_code );
 
 	/**
 	 * Get the default site language
@@ -60,7 +60,7 @@ interface WpmlInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getDefaultSiteLanguage();
+	public function get_default_site_language();
 
 	/**
 	 * Get the current site language
@@ -69,7 +69,7 @@ interface WpmlInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getCurrentSiteLanguage();
+	public function get_current_site_language();
 
 	/**
 	 * Return all active WPML languages
@@ -78,34 +78,34 @@ interface WpmlInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getSiteLanguages();
+	public function get_site_languages();
 
 	/**
 	 * Check if the site has an active WPML language
 	 *
-	 * @param string $languageCode The two-character language code
+	 * @param string $language_code The two-character language code
 	 *
 	 * @return boolean
 	 *
 	 * @since 0.1
 	 */
-	public function hasSiteLanguage( $languageCode );
+	public function has_site_language( $language_code );
 
 	/**
 	 * Dynamically set the current active language
 	 *
-	 * @param string $languageCode The two-character language code
+	 * @param string $language_code The two-character language code
 	 *
 	 * @since 0.1
 	 */
-	public function setSiteLanguage( $languageCode );
+	public function set_site_language( $language_code );
 
 	/**
 	 * Restore the language back to the original
 	 *
 	 * @since 0.1
 	 */
-	public function restoreSiteLanguage();
+	public function restore_site_language();
 
 	/**
 	 * Get a list of all languages the Gravity Form has been translated into
@@ -116,29 +116,29 @@ interface WpmlInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getGravityFormLanguages( $form );
+	public function get_gravityform_languages( $form );
 
 	/**
 	 * Check if the Gravity Form has been translated
 	 *
-	 * @param array  $form         The Gravity Forms form object
-	 * @param string $languageCode The two-character language code
+	 * @param array  $form          The Gravity Forms form object
+	 * @param string $language_code The two-character language code
 	 *
 	 * @return boolean
 	 *
 	 * @since 0.1
 	 */
-	public function hasTranslatedGravityForm( $form, $languageCode );
+	public function has_translated_gravityform( $form, $language_code );
 
 	/**
 	 * The translated Gravity Forms form object
 	 *
-	 * @param array  $form         The Gravity Forms form object
-	 * @param string $languageCode The two-character language code
+	 * @param array  $form          The Gravity Forms form object
+	 * @param string $language_code The two-character language code
 	 *
 	 * @return array
 	 *
 	 * @since 0.1
 	 */
-	public function getTranslatedGravityForm( $form, $languageCode );
+	public function get_translated_gravityform( $form, $language_code );
 }

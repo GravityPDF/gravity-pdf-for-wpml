@@ -14,14 +14,10 @@ use GFForms;
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -53,7 +49,7 @@ class GravityForms implements GravityFormsInterface {
 	/**
 	 * Get a Gravity Form object
 	 *
-	 * @param int $formId The Gravity Form ID
+	 * @param int $form_id The Gravity Form ID
 	 *
 	 * @return array
 	 *
@@ -61,13 +57,12 @@ class GravityForms implements GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getForm( $formId ) {
+	public function get_form( $form_id ) {
 		$gform = GPDFAPI::get_form_class();
 
-		$form = $gform->get_form( $formId );
-
+		$form = $gform->get_form( $form_id );
 		if ( $form === null ) {
-			throw new GpdfWpmlException( sprintf( 'Could not find Gravity Form with ID %s', $formId ) );
+			throw new GpdfWpmlException( sprintf( 'Could not find Gravity Form with ID %s', $form_id ) );
 		}
 
 		return $form;
@@ -76,7 +71,7 @@ class GravityForms implements GravityFormsInterface {
 	/**
 	 * Get a Gravity Form Entry object
 	 *
-	 * @param int $entryId The Gravity Form Entry ID
+	 * @param int $entry_id The Gravity Form Entry ID
 	 *
 	 * @return array
 	 *
@@ -84,10 +79,10 @@ class GravityForms implements GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getEntry( $entryId ) {
+	public function get_entry( $entry_id ) {
 		$gform = GPDFAPI::get_form_class();
-		$entry = $gform->get_entry( $entryId );
 
+		$entry = $gform->get_entry( $entry_id );
 		if ( is_wp_error( $entry ) ) {
 			throw new GpdfWpmlException( $entry->get_error_message() );
 		}
@@ -98,32 +93,31 @@ class GravityForms implements GravityFormsInterface {
 	/**
 	 * Save the language code with the entry
 	 *
-	 * @param int    $entryId      The Gravity Form Entry ID
-	 * @param string $languageCode The two-character language code
+	 * @param int    $entry_id      The Gravity Form Entry ID
+	 * @param string $language_code The two-character language code
 	 *
 	 * @since 0.1
 	 */
-	public function saveEntryLanguageCode( $entryId, $languageCode ) {
-		gform_update_meta( $entryId, 'wpml_language_code', $languageCode );
+	public function save_entry_language_code( $entry_id, $language_code ) {
+		gform_update_meta( $entry_id, 'wpml_language_code', $language_code );
 	}
 
 	/**
 	 * Get the language code from the entry
 	 *
-	 * @param int $entryId The Gravity Form Entry ID
+	 * @param int $entry_id The Gravity Form Entry ID
 	 *
 	 * @return string
 	 *
 	 * @since 0.1
 	 */
-	public function getEntryLanguageCode( $entryId ) {
-		$languageCode = gform_get_meta( $entryId, 'wpml_language_code' );
-
-		if ( ! is_string( $languageCode ) ) {
+	public function get_entry_language_code( $entry_id ) {
+		$language_code = gform_get_meta( $entry_id, 'wpml_language_code' );
+		if ( ! is_string( $language_code ) ) {
 			return '';
 		}
 
-		return $languageCode;
+		return $language_code;
 	}
 
 	/**
@@ -131,7 +125,7 @@ class GravityForms implements GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function flushCurrentGravityForm() {
+	public function flush_current_gravityform() {
 		GFFormsModel::flush_current_forms();
 	}
 
@@ -139,15 +133,15 @@ class GravityForms implements GravityFormsInterface {
 	 * Check if the current user has a particular capability
 	 *
 	 * @param string   $capability
-	 * @param int|null $userId
+	 * @param int|null $user_id
 	 *
 	 * @return bool
 	 *
 	 * @since 0.1
 	 */
-	public function hasCapability( $capability, $userId = null ) {
+	public function has_capability( $capability, $user_id = null ) {
 		$gform = GPDFAPI::get_form_class();
-		return $gform->has_capability( $capability, $userId );
+		return $gform->has_capability( $capability, $user_id );
 	}
 
 	/**
@@ -157,7 +151,7 @@ class GravityForms implements GravityFormsInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getPage() {
+	public function get_page() {
 		$page = GFForms::get_page();
 		return $page !== false ? $page : '';
 	}
@@ -165,17 +159,17 @@ class GravityForms implements GravityFormsInterface {
 	/**
 	 * Add a note to the Gravity Form Entry
 	 *
-	 * @param int    $entryId
+	 * @param int    $entry_id
 	 * @param string $note
 	 *
 	 * @since 0.1
 	 */
-	public function addNote( $entryId, $note ) {
+	public function add_note( $entry_id, $note ) {
 		global $current_user;
 
-		$userData    = get_userdata( $current_user->ID );
-		$displayName = $userData !== false ? $userData->display_name : 'Unknown';
+		$user_data    = get_userdata( $current_user->ID );
+		$display_name = $user_data !== false ? $user_data->display_name : 'Unknown';
 
-		GFFormsModel::add_note( $entryId, $current_user->ID, $displayName, $note, 'note' );
+		GFFormsModel::add_note( $entry_id, $current_user->ID, $display_name, $note, 'note' );
 	}
 }

@@ -11,14 +11,10 @@ use GFPDF\Plugins\WPML\Form\GravityFormsInterface;
  * @since       1.0
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -49,6 +45,7 @@ class FormData {
 
 	/**
 	 * @var GravityFormsInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $gf;
@@ -72,7 +69,7 @@ class FormData {
 	 * @since 1.0
 	 */
 	public function init() {
-		$this->addFilters();
+		$this->add_filters();
 	}
 
 	/**
@@ -82,8 +79,8 @@ class FormData {
 	 *
 	 * @since 1.0
 	 */
-	public function addFilters() {
-		add_filter( 'gfpdf_form_data', [ $this, 'addLanguageKey' ], 10, 2 );
+	public function add_filters() {
+		add_filter( 'gfpdf_form_data', [ $this, 'add_language_key' ], 10, 2 );
 	}
 
 	/**
@@ -96,11 +93,11 @@ class FormData {
 	 *
 	 * @since 0.1
 	 */
-	public function addLanguageKey( $data, $entry ) {
-		$languageCode = $this->gf->getEntryLanguageCode( $entry['id'] );
+	public function add_language_key( $data, $entry ) {
+		$language_code = $this->gf->get_entry_language_code( $entry['id'] );
 
 		if ( isset( $data['misc'] ) && is_array( $data['misc'] ) ) {
-			$data['misc']['language_code'] = $languageCode;
+			$data['misc']['language_code'] = $language_code;
 		}
 
 		return $data;

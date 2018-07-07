@@ -94,7 +94,6 @@ class Bootstrap extends Helper_Abstract_Addon {
 	 * Check the plugin's license is active and initialise the EDD Updater
 	 *
 	 * @since 0.1
-	 * phpcs:disable
 	 */
 	public function plugin_updater() {
 
@@ -112,10 +111,7 @@ class Bootstrap extends Helper_Abstract_Addon {
 				'beta'      => false,
 			]
 		);
-
-		$this->log->notice( sprintf( '%s plugin updater initialised', $this->get_name() ) );
 	}
-	/* phpcs:enable */
 }
 
 /* Use the filter below to replace and extend our Bootstrap class if needed */

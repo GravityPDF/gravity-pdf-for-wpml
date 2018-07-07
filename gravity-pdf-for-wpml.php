@@ -20,14 +20,10 @@
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -69,19 +65,19 @@ class GpdfWpmlChecks {
 	 * @var string
 	 * @since 0.1
 	 */
-	private $requiredGravitypdfVersion = '4.4.0';
+	private $required_gravitypdf_version = '4.4.0';
 
 	/**
 	 * @var string
 	 * @since 0.1
 	 */
-	private $requiredWpmlVersion = '4.0.3';
+	private $required_wpml_version = '4.0.3';
 
 	/**
 	 * @var string
 	 * @since 0.1
 	 */
-	private $requiredWpmlGravityformsVersion = '1.3.17';
+	private $required_wpml_gravityforms_version = '1.3.17';
 
 	/**
 	 * Run our pre-checks and if it passes bootstrap the plugin
@@ -91,22 +87,20 @@ class GpdfWpmlChecks {
 	public function init() {
 
 		/* Test the minimum version requirements are met */
-		$this->checkGravitypdfVersion();
-		$this->checkWpmlVersion();
-		$this->checkWpmlGravityformsVersion();
+		$this->check_gravitypdf_version();
+		$this->check_wpml_version();
+		$this->check_wpml_gravityforms_version();
 
 		/* Check if any errors were thrown, enqueue them and exit early */
 		if ( count( $this->notices ) > 0 ) {
-			add_action( 'admin_notices', [ $this, 'displayNotices' ] );
+			add_action( 'admin_notices', [ $this, 'display_notices' ] );
 
 			return;
 		}
 
-		add_action(
-			'gfpdf_fully_loaded', function() {
-				require_once __DIR__ . '/src/bootstrap.php';
-			}
-		);
+		add_action( 'gfpdf_fully_loaded', function() {
+			require_once __DIR__ . '/src/bootstrap.php';
+		} );
 	}
 
 	/**
@@ -114,18 +108,18 @@ class GpdfWpmlChecks {
 	 *
 	 * @since 0.1
 	 */
-	public function checkGravitypdfVersion() {
+	public function check_gravitypdf_version() {
 
 		/* Check if the Gravity PDF Minimum version requirements are met */
 		if (
 			defined( 'PDF_EXTENDED_VERSION' ) &&
-			version_compare( PDF_EXTENDED_VERSION, $this->requiredGravitypdfVersion, '>=' )
+			version_compare( PDF_EXTENDED_VERSION, $this->required_gravitypdf_version, '>=' )
 		) {
 			return;
 		}
 
 		/* Throw error */
-		$this->notices[] = sprintf( esc_html__( 'Gravity PDF Version %s or higher is required to use this add-on. Please install/upgrade Gravity PDF to the latest version.', 'gravity-pdf-for-wpml' ), $this->requiredGravitypdfVersion );
+		$this->notices[] = sprintf( esc_html__( 'Gravity PDF Version %s or higher is required to use this add-on. Please install/upgrade Gravity PDF to the latest version.', 'gravity-pdf-for-wpml' ), $this->required_gravitypdf_version );
 	}
 
 	/**
@@ -133,18 +127,18 @@ class GpdfWpmlChecks {
 	 *
 	 * @since 0.1
 	 */
-	public function checkWpmlVersion() {
+	public function check_wpml_version() {
 
 		/* Check if the WPML minimum version requirements are met */
 		if (
 			defined( 'ICL_SITEPRESS_VERSION' ) &&
-			version_compare( ICL_SITEPRESS_VERSION, $this->requiredWpmlVersion, '>=' )
+			version_compare( ICL_SITEPRESS_VERSION, $this->required_wpml_version, '>=' )
 		) {
 			return;
 		}
 
 		/* Throw error */
-		$this->notices[] = sprintf( esc_html__( 'WPML Multilingual CMS Version %s or higher is required to use this add-on. Please install/upgrade WPML Multilingual CMS to the latest version.', 'gravity-pdf-for-wpml' ), $this->requiredWpmlVersion );
+		$this->notices[] = sprintf( esc_html__( 'WPML Multilingual CMS Version %s or higher is required to use this add-on. Please install/upgrade WPML Multilingual CMS to the latest version.', 'gravity-pdf-for-wpml' ), $this->required_wpml_version );
 	}
 
 	/**
@@ -152,18 +146,18 @@ class GpdfWpmlChecks {
 	 *
 	 * @since 0.1
 	 */
-	public function checkWpmlGravityformsVersion() {
+	public function check_wpml_gravityforms_version() {
 
 		/* Check if the Gravity PDF Minimum version requirements are met */
 		if (
 			defined( 'GRAVITYFORMS_MULTILINGUAL_VERSION' ) &&
-			version_compare( GRAVITYFORMS_MULTILINGUAL_VERSION, $this->requiredWpmlGravityformsVersion, '>=' )
+			version_compare( GRAVITYFORMS_MULTILINGUAL_VERSION, $this->required_wpml_gravityforms_version, '>=' )
 		) {
 			return;
 		}
 
 		/* Throw error */
-		$this->notices[] = sprintf( esc_html__( 'Gravity Forms Multilingual Version %s or higher is required to use this add-on. Please install/upgrade WPML\'s Gravity Forms Multilingual plugin to the latest version.', 'gravity-pdf-for-wpml' ), $this->requiredWpmlGravityformsVersion );
+		$this->notices[] = sprintf( esc_html__( 'Gravity Forms Multilingual Version %s or higher is required to use this add-on. Please install/upgrade WPML\'s Gravity Forms Multilingual plugin to the latest version.', 'gravity-pdf-for-wpml' ), $this->required_wpml_gravityforms_version );
 	}
 
 	/**
@@ -173,7 +167,7 @@ class GpdfWpmlChecks {
 	 *
 	 * @since 0.1
 	 */
-	public function displayNotices() {
+	public function display_notices() {
 		?>
 		<div class="error">
 			<p>
@@ -192,9 +186,7 @@ class GpdfWpmlChecks {
 }
 
 /* Initialise the software */
-add_action(
-	'plugins_loaded', function() {
-		$gravitypdfWpml = new GpdfWpmlChecks();
-		$gravitypdfWpml->init();
-	}
-);
+add_action( 'plugins_loaded', function() {
+	$gravitypdf_wpml = new GpdfWpmlChecks();
+	$gravitypdf_wpml->init();
+} );

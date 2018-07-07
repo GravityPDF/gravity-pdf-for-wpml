@@ -13,14 +13,10 @@ use GPDFAPI;
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -51,6 +47,7 @@ class Pdf implements PdfInterface {
 
 	/**
 	 * @var GravityFormsInterface
+	 *
 	 * @since 0.1
 	 */
 	protected $gf;
@@ -69,8 +66,8 @@ class Pdf implements PdfInterface {
 	/**
 	 * Get the PDF Settings
 	 *
-	 * @param int    $formId The Gravity Form Entry ID
-	 * @param string $pdfId  The PDF ID
+	 * @param int    $form_id The Gravity Form Entry ID
+	 * @param string $pdf_id  The PDF ID
 	 *
 	 * @return array
 	 *
@@ -78,8 +75,8 @@ class Pdf implements PdfInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getPdf( $formId, $pdfId ) {
-		$pdf = GPDFAPI::get_pdf( $formId, $pdfId );
+	public function get_pdf( $form_id, $pdf_id ) {
+		$pdf = GPDFAPI::get_pdf( $form_id, $pdf_id );
 
 		if ( is_wp_error( $pdf ) ) {
 			throw new GpdfWpmlException( $pdf->get_error_message() );
@@ -91,8 +88,8 @@ class Pdf implements PdfInterface {
 	/**
 	 * Get a PDF's Filename
 	 *
-	 * @param int    $entryId The Gravity Form ID
-	 * @param string $pdfId   The PDF ID
+	 * @param int    $entry_id The Gravity Form ID
+	 * @param string $pdf_id   The PDF ID
 	 *
 	 * @return string
 	 *
@@ -100,34 +97,34 @@ class Pdf implements PdfInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getPdfName( $entryId, $pdfId ) {
-		$entry      = $this->gf->getEntry( $entryId );
-		$pdfSetting = $this->getPdf( $entry['form_id'], $pdfId );
-		$modelPdf   = GPDFAPI::get_mvc_class( 'Model_PDF' );
+	public function get_pdf_name( $entry_id, $pdf_id ) {
+		$entry       = $this->gf->get_entry( $entry_id );
+		$pdf_setting = $this->get_pdf( $entry['form_id'], $pdf_id );
+		$model_pdf   = GPDFAPI::get_mvc_class( 'Model_PDF' );
 
-		return $modelPdf->get_pdf_name( $pdfSetting, $entry );
+		return $model_pdf->get_pdf_name( $pdf_setting, $entry );
 	}
 
 	/**
 	 * Get a PDF's URL
 	 *
-	 * @param int    $entryId  The Gravity Form Entry ID
-	 * @param string $pdfId    The PDF ID
+	 * @param int    $entry_id The Gravity Form Entry ID
+	 * @param string $pdf_id   The PDF ID
 	 * @param bool   $download Whether to generate the 'view' or 'download PDF URL
 	 *
 	 * @return string
 	 *
 	 * @since 0.1
 	 */
-	public function getPdfUrl( $entryId, $pdfId, $download = false ) {
-		$modelPdf = GPDFAPI::get_mvc_class( 'Model_PDF' );
-		return $modelPdf->get_pdf_url( $pdfId, $entryId, $download );
+	public function get_pdf_url( $entry_id, $pdf_id, $download = false ) {
+		$model_pdf = GPDFAPI::get_mvc_class( 'Model_PDF' );
+		return $model_pdf->get_pdf_url( $pdf_id, $entry_id, $download );
 	}
 
 	/**
 	 * Get a list of active PDFs for a particular Gravity Form / Entry
 	 *
-	 * @param int $entryId The Gravity Form Entry ID
+	 * @param int $entry_id The Gravity Form Entry ID
 	 *
 	 * @return array
 	 *
@@ -135,59 +132,59 @@ class Pdf implements PdfInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getActivePdfs( $entryId ) {
-		$entry = $this->gf->getEntry( $entryId );
-		$form  = $this->gf->getForm( $entry['form_id'] );
+	public function get_active_pdfs( $entry_id ) {
+		$entry = $this->gf->get_entry( $entry_id );
+		$form  = $this->gf->get_form( $entry['form_id'] );
 
 		if ( ! isset( $form['gfpdf_form_settings'] ) || ! is_array( $form['gfpdf_form_settings'] ) ) {
 			return [];
 		}
 
-		$modelPdf = GPDFAPI::get_mvc_class( 'Model_PDF' );
-		return $modelPdf->get_active_pdfs( $form['gfpdf_form_settings'], $entry );
+		$model_pdf = GPDFAPI::get_mvc_class( 'Model_PDF' );
+		return $model_pdf->get_active_pdfs( $form['gfpdf_form_settings'], $entry );
 	}
 
 	/**
 	 * Get the global PDF Setting
 	 *
-	 * @param string $optionName   The Global PDF Setting Name
-	 * @param mixed  $defaultValue The fallback when no Global PDF Setting exists
+	 * @param string $option_name   The Global PDF Setting Name
+	 * @param mixed  $default_value The fallback when no Global PDF Setting exists
 	 *
 	 * @return mixed
 	 *
 	 * @since 0.1
 	 */
-	public function getOption( $optionName, $defaultValue ) {
-		return GPDFAPI::get_plugin_option( $optionName, $defaultValue );
+	public function get_option( $option_name, $default_value ) {
+		return GPDFAPI::get_plugin_option( $option_name, $default_value );
 	}
 
 	/**
 	 * Get the PDF Template Header Information
 	 *
-	 * @param string $templateId
+	 * @param string $template_id
 	 *
 	 * @return array
 	 *
 	 * @since 0.1
 	 */
-	public function getTemplateInfoById( $templateId ) {
+	public function get_template_info_by_id( $template_id ) {
 		$template = GPDFAPI::get_templates_class();
-		return $template->get_template_info_by_id( $templateId );
+		return $template->get_template_info_by_id( $template_id );
 	}
 
 	/**
 	 * Remove a Gravity PDF Filter
 	 *
-	 * @param string $filterName The WordPress Filter to remove
-	 * @param string $className  The MVC Class the filter was assigned to
-	 * @param string $methodName The MVC Method the filter ran
-	 * @param int    $priority   The filter priority
+	 * @param string $filter_name The WordPress Filter to remove
+	 * @param string $class_name  The MVC Class the filter was assigned to
+	 * @param string $method_name The MVC Method the filter ran
+	 * @param int    $priority    The filter priority
 	 *
 	 * @since 0.1
 	 */
-	public function removeFilter( $filterName, $className, $methodName, $priority = 10 ) {
-		$class = GPDFAPI::get_mvc_class( $className );
+	public function remove_filter( $filter_name, $class_name, $method_name, $priority = 10 ) {
+		$class = GPDFAPI::get_mvc_class( $class_name );
 
-		remove_filter( $filterName, [ $class, $methodName ], $priority );
+		remove_filter( $filter_name, [ $class, $method_name ], $priority );
 	}
 }

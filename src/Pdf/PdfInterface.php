@@ -11,14 +11,10 @@ use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
  * @since       0.1
  */
 
-/*
- * Exit if accessed directly
- * phpcs:disable
- */
+/* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-/* phpcs:enable */
 
 /*
 	This file is part of Gravity PDF for WPML.
@@ -50,8 +46,8 @@ interface PdfInterface {
 	/**
 	 * Get the PDF Settings
 	 *
-	 * @param int    $formId The Gravity Form Entry ID
-	 * @param string $pdfId  The PDF ID
+	 * @param int    $form_id The Gravity Form Entry ID
+	 * @param string $pdf_id  The PDF ID
 	 *
 	 * @return array
 	 *
@@ -59,13 +55,13 @@ interface PdfInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getPdf( $formId, $pdfId );
+	public function get_pdf( $form_id, $pdf_id );
 
 	/**
 	 * Get a PDF's Filename
 	 *
-	 * @param int    $entryId The Gravity Form ID
-	 * @param string $pdfId   The PDF ID
+	 * @param int    $entry_id The Gravity Form ID
+	 * @param string $pdf_id   The PDF ID
 	 *
 	 * @return string
 	 *
@@ -73,25 +69,25 @@ interface PdfInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getPdfName( $entryId, $pdfId );
+	public function get_pdf_name( $entry_id, $pdf_id );
 
 	/**
 	 * Get a PDF's URL
 	 *
-	 * @param int    $entryId  The Gravity Form Entry ID
-	 * @param string $pdfId    The PDF ID
+	 * @param int    $entry_id The Gravity Form Entry ID
+	 * @param string $pdf_id   The PDF ID
 	 * @param bool   $download Whether to generate the 'view' or 'download PDF URL
 	 *
 	 * @return string
 	 *
 	 * @since 0.1
 	 */
-	public function getPdfUrl( $entryId, $pdfId, $download = false );
+	public function get_pdf_url( $entry_id, $pdf_id, $download = false );
 
 	/**
 	 * Get a list of active PDFs for a particular Gravity Form / Entry
 	 *
-	 * @param int $entryId The Gravity Form Entry ID
+	 * @param int $entry_id The Gravity Form Entry ID
 	 *
 	 * @return array
 	 *
@@ -99,40 +95,40 @@ interface PdfInterface {
 	 *
 	 * @since 0.1
 	 */
-	public function getActivePdfs( $entryId );
+	public function get_active_pdfs( $entry_id );
 
 	/**
 	 * Get the global PDF Setting
 	 *
-	 * @param string $optionName   The Global PDF Setting Name
-	 * @param mixed  $defaultValue The fallback when no Global PDF Setting exists
+	 * @param string $option_name   The Global PDF Setting Name
+	 * @param mixed  $default_value The fallback when no Global PDF Setting exists
 	 *
 	 * @return mixed
 	 *
 	 * @since 0.1
 	 */
-	public function getOption( $optionName, $defaultValue );
+	public function get_option( $option_name, $default_value );
 
 	/**
 	 * Get the PDF Template Header Information
 	 *
-	 * @param string $templateId
+	 * @param string $template_id
 	 *
 	 * @return array
 	 *
 	 * @since 0.1
 	 */
-	public function getTemplateInfoById( $templateId );
+	public function get_template_info_by_id( $template_id );
 
 	/**
 	 * Remove a Gravity PDF Filter
 	 *
-	 * @param string $filterName The WordPress Filter to remove
-	 * @param string $className  The MVC Class the filter was assigned to
-	 * @param string $methodName The MVC Method the filter ran
-	 * @param int    $priority   The filter priority
+	 * @param string $filter_name The WordPress Filter to remove
+	 * @param string $class_name  The MVC Class the filter was assigned to
+	 * @param string $method_name The MVC Method the filter ran
+	 * @param int    $priority    The filter priority
 	 *
 	 * @since 0.1
 	 */
-	public function removeFilter( $filterName, $className, $methodName, $priority = 10 );
+	public function remove_filter( $filter_name, $class_name, $method_name, $priority = 10 );
 }

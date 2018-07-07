@@ -23,12 +23,15 @@ matrix:
     env: SNIFF=1
 
 before_install:
-  - if [[ $SNIFF ]]; then export PHPCS_DIR=/tmp/phpcs; fi
-  - if [[ $SNIFF ]]; then export SNIFFS_DIR=/tmp/sniffs; fi
-  - if [[ $SNIFF ]]; then git clone -b master --depth 1 https://github.com/squizlabs/PHP_CodeSniffer.git $PHPCS_DIR; fi
-  - if [[ $SNIFF ]]; then git clone -b master --depth 1 https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $SNIFFS_DIR; fi
-  - if [[ $SNIFF ]]; then $PHPCS_DIR/bin/phpcs --config-set installed_paths $SNIFFS_DIR; fi
-  - if [[ $SNIFF ]]; then phpenv rehash; fi
+  - |
+    if [[ $LINT ]]; then
+      export PHPCS_DIR=/tmp/phpcs
+      export LINT_DIR=/tmp/lint
+      git clone -b master --depth 1 https://github.com/squizlabs/PHP_CodeSniffer.git $PHPCS_DIR
+      git clone -b master --depth 1 https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $LINTS_DIR
+      $PHPCS_DIR/bin/phpcs --config-set installed_paths $LINTS_DIR
+      phpenv rehash
+    fi;
 
 before_script:
   - if [[ ! $PHPUNIT_COVERAGE_TEST ]]; then phpenv config-rm xdebug.ini; fi
@@ -37,9 +40,14 @@ before_script:
   - bash tests/bin/install.sh gravitypdf_test root '' localhost $WP_VERSION
 
 script:
- - if [[ $PHPUNIT_COVERAGE_TEST ]]; then ./vendor/bin/phpunit --coverage-clover=coverage/php-coverage1.xml; fi
- - if [[ ! $PHPUNIT_COVERAGE_TEST && ! $SNIFF ]]; then ./vendor/bin/phpunit; fi
- - if [[ $SNIFF ]]; then $PHPCS_DIR/bin/phpcs -p .; fi
+ - |
+   if [[ $LINT ]]; then
+     $PHPCS_DIR/bin/phpcs -p .
+   elif [[ $PHPUNIT_COVERAGE_TEST ]]; then
+    ./vendor/bin/phpunit --coverage-clover=coverage/php-coverage1.xml
+   else
+    ./vendor/bin/phpunit
+   fi
 
 after_success:
  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then bash <(curl -s https://codecov.io/bash); fi
