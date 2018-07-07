@@ -44,10 +44,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Header {
 
 	/**
-	 * Initialise class
-	 *
-	 * @return void
-	 *
 	 * @since 1.0
 	 */
 	public function init() {
@@ -56,8 +52,6 @@ class Header {
 
 	/**
 	 * Add WordPress filters
-	 *
-	 * @return void
 	 *
 	 * @since 1.0
 	 */

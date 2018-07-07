@@ -64,10 +64,6 @@ class FormData {
 	}
 
 	/**
-	 * Initialise class
-	 *
-	 * @return void
-	 *
 	 * @since 1.0
 	 */
 	public function init() {
@@ -76,8 +72,6 @@ class FormData {
 
 	/**
 	 * Add WordPress filters
-	 *
-	 * @return void
 	 *
 	 * @since 1.0
 	 */
