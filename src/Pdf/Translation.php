@@ -161,10 +161,12 @@ class Translation {
 				throw new GpdfWpmlException( sprintf( 'Could not find Gravity Form translation for "%s"', $language_code ) );
 			}
 		} catch ( GpdfWpmlException $e ) {
-			$this->logger->error( 'PDF View / Download / API: ' . $e->getMessage(), [
-				'file' => $e->getFile(),
-				'line' => $e->getLine(),
-			] );
+			$this->logger->error(
+				'PDF View / Download / API: ' . $e->getMessage(), [
+					'file' => $e->getFile(),
+					'line' => $e->getLine(),
+				]
+			);
 
 			$language_code = $this->wpml->get_default_site_language();
 		}

@@ -68,14 +68,14 @@ class GlobalSettings {
 	 */
 	public function add_global_settings( $settings ) {
 		$wpml_settings = [
-			'wpml_desc' => [
+			'wpml_desc'                   => [
 				'id'    => 'wpml_desc',
 				'type'  => 'descriptive_text',
 				'desc'  => '<h4 class="section-title">' . esc_html__( 'Gravity PDF for WPML', 'gravity-pdf-for-wpml' ) . '</h4>',
 				'class' => 'gfpdf-no-padding',
 			],
 
-			'wpml_user_notification' => [
+			'wpml_user_notification'      => [
 				'id'      => 'wpml_user_notification',
 				'name'    => esc_html__( 'Only Translate User Notification PDFs', 'gravity-pdf-for-wpml' ),
 				'type'    => 'radio',

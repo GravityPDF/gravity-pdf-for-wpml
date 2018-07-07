@@ -250,9 +250,11 @@ class Wpml implements WpmlInterface {
 		$translation_status = $wpdb->get_results(
 			$wpdb->prepare(
 				$sql,
-				array_map( function( $translation ) {
-					return $translation->translation_id;
-				}, $available_translations )
+				array_map(
+					function( $translation ) {
+							return $translation->translation_id;
+					}, $available_translations
+				)
 			)
 		);
 		/* phpcs:enable */

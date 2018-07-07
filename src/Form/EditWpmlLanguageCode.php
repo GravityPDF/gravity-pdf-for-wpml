@@ -134,10 +134,12 @@ class EditWpmlLanguageCode {
 			try {
 				$this->add_language_selector_edit( $language_code, $this->wpml->get_gravityform_languages( $this->gf->get_form( $form_id ) ) );
 			} catch ( GpdfWpmlException $e ) {
-				$this->logger->error( 'Language Switcher: ' . $e->getMessage(), [
-					'file' => $e->getFile(),
-					'line' => $e->getLine(),
-				] );
+				$this->logger->error(
+					'Language Switcher: ' . $e->getMessage(), [
+						'file' => $e->getFile(),
+						'line' => $e->getLine(),
+					]
+				);
 			}
 		}
 	}
@@ -157,11 +159,13 @@ class EditWpmlLanguageCode {
 			! isset( $_POST['gpdf_original_language_nonce'] ) ||
 			! wp_verify_nonce( $_POST['gpdf_original_language_nonce'], 'gpdf_original_language_nonce' )
 		) {
-			$this->logger->warning( 'WPML Language Switcher Nonce Failure', [
-				'user_id'  => get_current_user_id(),
-				'form_id'  => $form['id'],
-				'entry_id' => $entry_id,
-			] );
+			$this->logger->warning(
+				'WPML Language Switcher Nonce Failure', [
+					'user_id'  => get_current_user_id(),
+					'form_id'  => $form['id'],
+					'entry_id' => $entry_id,
+				]
+			);
 
 			return;
 		}

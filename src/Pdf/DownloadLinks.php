@@ -143,10 +143,12 @@ class DownloadLinks {
 			$form  = $this->gf->get_form( $entry['form_id'] );
 			$pdf   = $this->pdf->get_pdf( $entry['form_id'], $pid );
 		} catch ( GpdfWpmlException $e ) {
-			$this->logger->error( 'PDF URL: ' . $e->getMessage(), [
-				'file' => $e->getFile(),
-				'line' => $e->getLine(),
-			] );
+			$this->logger->error(
+				'PDF URL: ' . $e->getMessage(), [
+					'file' => $e->getFile(),
+					'line' => $e->getLine(),
+				]
+			);
 
 			return $url;
 		}
@@ -185,7 +187,7 @@ class DownloadLinks {
 			break;
 		}
 
-		return $this->wpml->get_current_site_language();;
+		return $this->wpml->get_current_site_language();
 	}
 
 	/**
@@ -203,10 +205,12 @@ class DownloadLinks {
 		try {
 			$form = $this->gf->get_form( $form_id );
 		} catch ( GpdfWpmlException $e ) {
-			$this->logger->error( 'PDF Entry Details Links: ' . $e->getMessage(), [
-				'file' => $e->getFile(),
-				'line' => $e->getLine(),
-			] );
+			$this->logger->error(
+				'PDF Entry Details Links: ' . $e->getMessage(), [
+					'file' => $e->getFile(),
+					'line' => $e->getLine(),
+				]
+			);
 
 			return;
 		}
@@ -288,10 +292,12 @@ class DownloadLinks {
 		try {
 			$active_pdfs = $this->pdf->get_active_pdfs( $entry['id'] );
 		} catch ( GpdfWpmlException $e ) {
-			$this->logger->error( 'PDF List: ' . $e->getMessage(), [
-				'file' => $e->getFile(),
-				'line' => $e->getLine(),
-			] );
+			$this->logger->error(
+				'PDF List: ' . $e->getMessage(), [
+					'file' => $e->getFile(),
+					'line' => $e->getLine(),
+				]
+			);
 
 			return $pdf_list;
 		}
@@ -312,10 +318,12 @@ class DownloadLinks {
 						'wpml'     => $template_info['wpml'],
 					];
 				} catch ( GpdfWpmlException $e ) {
-					$this->logger->error( 'PDF List Info: ' . $e->getMessage(), [
-						'file' => $e->getFile(),
-						'line' => $e->getLine(),
-					] );
+					$this->logger->error(
+						'PDF List Info: ' . $e->getMessage(), [
+							'file' => $e->getFile(),
+							'line' => $e->getLine(),
+						]
+					);
 				}
 			}
 		}

@@ -55,11 +55,6 @@
     <rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
         <properties>
             <property name="spaces_before_closure_open_paren" value="0"/>
-        </properties>
-    </rule>
-
-    <rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
-        <properties>
             <property name="space_before_colon" value="forbidden"/>
         </properties>
     </rule>
