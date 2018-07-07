@@ -238,7 +238,12 @@ class Wpml implements WpmlInterface {
 		$trid                   = $sitepress->get_element_trid( $package->ID, $element_type );
 		$available_translations = $sitepress->get_element_translations( $trid, $element_type );
 
-		/* Prepare a single SQL statement to get the translation status from WPML */
+		/*
+		 * Prepare a single SQL statement to get the translation status from WPML
+		 *
+		 * Disabled SQL code-sniff check because we're dynamically populating the placeholders
+		 * phpcs:disable WordPress.WP.PreparedSQL.NotPrepared
+		 */
 		$placeholder = implode( ', ', array_fill( 0, count( $available_translations ), '%d' ) );
 		$sql         = "SELECT translation_id, status FROM {$wpdb->prefix}icl_translation_status WHERE translation_id IN ($placeholder)";
 
@@ -250,6 +255,7 @@ class Wpml implements WpmlInterface {
 				}, $available_translations )
 			)
 		);
+		/* phpcs:enable */
 
 		/* Convert the translation status to a easy-to-check array */
 		$translation_status_by_id = [];
