@@ -103,8 +103,6 @@ class DownloadLinks {
 	}
 
 	/**
-	 * Initialise our module
-	 *
 	 * @since 0.1
 	 */
 	public function init() {
@@ -142,6 +140,7 @@ class DownloadLinks {
 
 		try {
 			$entry = $this->gf->get_entry( $entry_id );
+			$form  = $this->gf->get_form( $entry['form_id'] );
 			$pdf   = $this->pdf->get_pdf( $entry['form_id'], $pid );
 		} catch ( GpdfWpmlException $e ) {
 			$this->logger->error( 'PDF URL: ' . $e->getMessage(), [
@@ -160,10 +159,33 @@ class DownloadLinks {
 
 		/* Translate the URL if the template is WPML-compatible */
 		if ( $this->is_template_wpml_compatible( $pdf ) ) {
-			return $this->wpml->get_translated_url( $url, $this->gf->get_entry_language_code( $entry['id'] ) );
+
+			/* Determine the language type to use based on the global PDF setting */
+			$language_code = $this->get_language_code( $entry['id'] );
+			if ( $this->wpml->has_translated_gravityform( $form, $language_code ) ) {
+				return $this->wpml->get_translated_url( $url, $language_code );
+			}
+
+			/* Fallback to base language when we cannot find PDF in selected language */
+			return $this->wpml->get_translated_url( $url, $this->wpml->get_default_site_language() );
 		}
 
 		return $url;
+	}
+
+	public function get_language_code( $entry_id ) {
+		$language_code_setting = $this->pdf->get_option( 'wpml_admin_default_language', 'user-language' );
+		switch ( $language_code_setting ) {
+			case 'default-language':
+				return $this->wpml->get_default_site_language();
+			break;
+
+			case 'entry-language':
+				return $this->gf->get_entry_language_code( $entry_id );
+			break;
+		}
+
+		return $this->wpml->get_current_site_language();;
 	}
 
 	/**
@@ -176,10 +198,7 @@ class DownloadLinks {
 	 * @since 0.1
 	 */
 	public function add_links_to_entry_details( $form_id, $entry ) {
-		$language_code = $this->gf->get_entry_language_code( $entry['id'] );
-		if ( ! $this->wpml->has_site_language( $language_code ) ) {
-			return;
-		}
+		$language_code = $this->get_language_code( $entry['id'] );
 
 		try {
 			$form = $this->gf->get_form( $form_id );
