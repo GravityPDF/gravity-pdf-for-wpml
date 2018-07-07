@@ -3,6 +3,7 @@
 namespace GFPDF\Plugins\WPML\Form;
 
 use GFPDF\Helper\Helper_Trait_Logger;
+use GFPDF\Plugins\WPML\Exceptions\GpdfWpmlException;
 use GFPDF\Plugins\WPML\Wpml\WpmlInterface;
 
 /**
@@ -126,12 +127,18 @@ class EditWpmlLanguageCode {
 	 */
 	public function add_language_selector( $form_id, $entry ) {
 		$language_code = $this->gf->get_entry_language_code( $entry['id'] );
-		$languages     = $this->wpml->get_site_languages();
 
 		if ( $this->gf->get_page() !== 'entry_detail_edit' ) {
-			$this->add_language_selector_view( $language_code, $languages );
+			$this->add_language_selector_view( $language_code, $this->wpml->get_site_languages() );
 		} elseif ( strlen( $language_code ) > 0 ) {
-			$this->add_language_selector_edit( $language_code, $languages );
+			try {
+				$this->add_language_selector_edit( $language_code, $this->wpml->get_gravityform_languages( $this->gf->get_form( $form_id ) ) );
+			} catch ( GpdfWpmlException $e ) {
+				$this->logger->error( 'Language Switcher: ' . $e->getMessage(), [
+					'file' => $e->getFile(),
+					'line' => $e->getLine(),
+				] );
+			}
 		}
 	}
 
@@ -181,24 +188,41 @@ class EditWpmlLanguageCode {
 	 * Add a dropdown selector to change the Gravity Forms Entry Language
 	 *
 	 * @param string $language_code The Gravity Forms Entry Language Code
-	 * @param array  $languages     The array of current active WPML languages
+	 * @param array  $languages     The array of current active WPML languages for the Gravity Form
 	 *
 	 * @since 0.1
 	 */
 	protected function add_language_selector_edit( $language_code, $languages ) {
-		/*
-		 * Add current language if missing
-		 * This might occur if a site language has been removed
-		 */
-		if ( strlen( $language_code ) > 0 && ! isset( $languages[ $language_code ] ) ) {
-			$languages[ $language_code ] = [
-				'code'            => $language_code,
-				'native_name'     => $language_code,
-				'translated_name' => $language_code,
-			];
-		}
+		$languages = $this->add_language_if_doesnt_exist( $language_code, $languages );
 
 		include __DIR__ . '/markup/EntryLanguageEdit.php';
+	}
+
+	/**
+	 * Add language if doesn't exist in the active Gravity Forms languages
+	 *
+	 * @param string $language_code The Gravity Forms Entry Language Code
+	 * @param array  $languages     The array of current active WPML languages for the Gravity Form
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 */
+	protected function add_language_if_doesnt_exist( $language_code, $languages ) {
+		if ( strlen( $language_code ) > 0 && ! isset( $languages[ $language_code ] ) ) {
+			$site_languages = $this->wpml->get_site_languages();
+			if ( isset( $site_languages[ $language_code ] ) ) {
+				$languages[ $language_code ] = $site_languages[ $language_code ];
+			} else {
+				$languages[ $language_code ] = [
+					'code'            => $language_code,
+					'native_name'     => $language_code,
+					'translated_name' => $language_code,
+				];
+			}
+		}
+
+		return $languages;
 	}
 
 	/**
