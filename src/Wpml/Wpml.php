@@ -2,6 +2,8 @@
 
 namespace GFPDF\Plugins\WPML\Wpml;
 
+use WPML_Package;
+
 /**
  * Handles all the WPML Interaction
  *
@@ -42,6 +44,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package GFPDF\Plugins\WPML\Wpml
  */
 class Wpml implements WpmlInterface {
+
+	/**
+	 * Holds a cache of the Gravity Forms translations
+	 *
+	 * @var array
+	 *
+	 * @since    0.1
+	 *
+	 * @Internal This prevents repeat database lookups each request
+	 */
+	protected $gravityforms_translations = [];
 
 	/**
 	 * Convert the URL to its translated counterpart
@@ -138,10 +151,9 @@ class Wpml implements WpmlInterface {
 	public function get_gravityform_languages( $form ) {
 		$gf_languages        = [];
 		$available_languages = $this->get_site_languages();
-		$default_language    = $this->get_default_site_language();
 
 		foreach ( $available_languages as $language_code => $language ) {
-			if ( $language_code === $default_language || $this->has_translated_gravityform( $form, $language_code ) ) {
+			if ( $this->has_translated_gravityform( $form, $language_code ) ) {
 				$gf_languages[ $language_code ] = $language;
 			}
 		}
@@ -164,7 +176,18 @@ class Wpml implements WpmlInterface {
 			return true;
 		}
 
-		return $form !== $this->get_translated_gravityform( $form, $language_code );
+		$available_languages = $this->get_gravityforms_translations( $form );
+		$status              = isset( $available_languages[ $language_code ] ) ? $available_languages[ $language_code ]->status : 0;
+
+		if ( defined( 'ICL_TM_NEEDS_UPDATE' ) && defined( 'ICL_TM_COMPLETE' ) ) {
+			switch ( $status ) {
+				case ICL_TM_NEEDS_UPDATE:
+				case ICL_TM_COMPLETE:
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -183,5 +206,65 @@ class Wpml implements WpmlInterface {
 		$this->restore_site_language();
 
 		return $translated_form;
+	}
+
+	/**
+	 * Get all available translations for a particular Gravity Form
+	 *
+	 * @param array $form The Gravity Forms form object
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 */
+	protected function get_gravityforms_translations( $form ) {
+		global $sitepress, $wpdb;
+
+		if (
+			! class_exists( 'WPML_Package' ) ||
+			! method_exists( $sitepress, 'get_element_trid' ) ||
+			! method_exists( $sitepress, 'get_element_translations' )
+		) {
+			return [];
+		}
+
+		if ( isset( $this->gravityforms_translations[ $form['id'] ] ) ) {
+			return $this->gravityforms_translations[ $form['id'] ];
+		}
+
+		/* Get available translations for a Gravity Form */
+		$package                = new \WPML_Package( $GLOBALS['wpml_gfml_tm_api']->get_form_package( $form ) );
+		$element_type           = $package->get_package_element_type();
+		$trid                   = $sitepress->get_element_trid( $package->ID, $element_type );
+		$available_translations = $sitepress->get_element_translations( $trid, $element_type );
+
+		/* Prepare a single SQL statement to get the translation status from WPML */
+		$placeholder = implode( ', ', array_fill( 0, count( $available_translations ), '%d' ) );
+		$sql         = "SELECT translation_id, status FROM {$wpdb->prefix}icl_translation_status WHERE translation_id IN ($placeholder)";
+
+		$translation_status = $wpdb->get_results(
+			$wpdb->prepare(
+				$sql,
+				array_map( function( $translation ) {
+					return $translation->translation_id;
+				}, $available_translations )
+			)
+		);
+
+		/* Convert the translation status to a easy-to-check array */
+		$translation_status_by_id = [];
+		foreach ( $translation_status as $translation ) {
+			$translation_status_by_id[ $translation->translation_id ] = $translation->status;
+		}
+
+		/* Assign the status to the translation */
+		foreach ( $available_translations as $translation ) {
+			$translation->status = isset( $translation_status_by_id[ $translation->translation_id ] ) ? $translation_status_by_id[ $translation->translation_id ] : 0;
+		}
+
+		/* Cache the results */
+		$this->gravityforms_translations[ $form['id'] ] = $available_translations;
+
+		return $available_translations;
 	}
 }
