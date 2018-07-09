@@ -17,7 +17,6 @@
 	<?php endforeach; ?>
 </select>
 
-<input name="gpdf_original_language" value="<?= esc_attr( $language_code ); ?>" type="hidden" />
 <?php wp_nonce_field( 'gpdf_original_language_nonce', 'gpdf_original_language_nonce' ); ?>
 
 <br><br>

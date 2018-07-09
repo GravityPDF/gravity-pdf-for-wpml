@@ -175,6 +175,15 @@ class DownloadLinks {
 		return $url;
 	}
 
+	/**
+	 * Get the language code based on the Gravity PDF for WPML settings
+	 *
+	 * @param int $entry_id
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
 	public function get_language_code( $entry_id ) {
 		$language_code_setting = $this->pdf->get_option( 'wpml_admin_default_language', 'user-language' );
 		switch ( $language_code_setting ) {
@@ -216,7 +225,7 @@ class DownloadLinks {
 		}
 
 		$pdf_list = $this->get_pdf_urls(
-			$this->get_pdf_list( $form, $entry ),
+			$this->get_pdf_list( $form, $entry, $language_code ),
 			$form,
 			$language_code
 		);
@@ -271,8 +280,9 @@ class DownloadLinks {
 	/**
 	 * Get a list of active PDFs for an entry
 	 *
-	 * @param array $form  The Gravity Forms object
-	 * @param array $entry The Gravity Forms entry object
+	 * @param array  $form          The Gravity Forms object
+	 * @param array  $entry         The Gravity Forms entry object
+	 * @param string $language_code The two-character language code
 	 *
 	 * @return array
 	 *
@@ -280,8 +290,8 @@ class DownloadLinks {
 	 *
 	 * @Internal We're overriding the standard Gravity PDF function to overload the list with additional data
 	 */
-	protected function get_pdf_list( $form, $entry ) {
-		$cache_id = 'pdf-list-' . $form['id'] . '-' . $entry['id'];
+	protected function get_pdf_list( $form, $entry, $language_code ) {
+		$cache_id = 'pdf-list-' . $form['id'] . '-' . $entry['id'] . '-' . $language_code;
 		if ( isset( $this->pdf_list_cache[ $cache_id ] ) ) {
 			$this->logger->notice( sprintf( 'Retrieving PDF list from cache "%s"', $cache_id ) );
 			return $this->pdf_list_cache[ $cache_id ];
@@ -347,7 +357,7 @@ class DownloadLinks {
 	 *
 	 * @since    0.1
 	 */
-	protected function is_template_wpml_compatible( $pdf ) {
+	public function is_template_wpml_compatible( $pdf ) {
 		/* Check if has the `@WPML: true` header */
 		if ( isset( $pdf['wpml'] ) && $pdf['wpml'] === 'true' ) {
 			return true;

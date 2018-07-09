@@ -67,10 +67,11 @@ class GravityPdfWpmlUnitTestsBootstrap {
 		RGFormsModel::drop_tables();
 		( function_exists( 'gf_upgrade' ) ) ? gf_upgrade()->maybe_upgrade() : @GFForms::setup( true );
 
-		require $this->plugin_dir . '/gravity-pdf-for-wpml.php';
+		require_once $this->plugin_dir . '/gravity-pdf-for-wpml.php';
+		require_once $this->plugin_dir . '/tests/phpunit/WpmlTesting.php';
 
 		/* Setup testing logger */
-		require $this->plugin_dir . '/tmp/gravity-forms-pdf-extended/vendor/autoload.php';
+		require_once $this->plugin_dir . '/tmp/gravity-forms-pdf-extended/vendor/autoload.php';
 		$this->log = new \Monolog\Logger( 'test' );
 		$this->log->pushHandler( new \Monolog\Handler\NullHandler( \Monolog\Logger::INFO ) ); /* throw logs away */
 	}

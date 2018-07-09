@@ -171,7 +171,7 @@ class EditWpmlLanguageCode {
 		}
 
 		$new_language_code = isset( $_POST['gpdf_language'] ) ? $_POST['gpdf_language'] : '';
-		$old_language_code = isset( $_POST['gpdf_original_language'] ) ? $_POST['gpdf_original_language'] : '';
+		$old_language_code = $this->gf->get_entry_language_code( $entry_id );
 
 		/* Ensure the note languages are displayed in the default site language */
 		$this->wpml->set_site_language( $this->wpml->get_default_site_language() );

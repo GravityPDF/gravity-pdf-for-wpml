@@ -245,6 +245,17 @@ class Translation {
 	}
 
 	/**
+	 * Get the current language code
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function get_language_code() {
+		return $this->current_language;
+	}
+
+	/**
 	 * Reset the current language code for the PDF being generated
 	 *
 	 * @since 0.1
