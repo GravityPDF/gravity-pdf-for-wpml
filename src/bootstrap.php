@@ -137,8 +137,8 @@ $plugin = apply_filters(
 	)
 );
 
-$plugin->set_edd_download_id( '' );
-$plugin->set_addon_documentation_slug( 'shop-plugin-wpml-add-on' );
+$plugin->set_edd_download_id( '23026' );
+$plugin->set_addon_documentation_slug( 'shop-plugin-gravity-pdf-for-wpml-add-on' );
 $plugin->init();
 
 /* Use the action below to access our Bootstrap class, and any singletons saved in $plugin->singleton */
