@@ -2,8 +2,8 @@
 
 /**
  * Plugin Name:     Gravity PDF for WPML
- * Plugin URI:
- * Description:
+ * Plugin URI:      https://gravitypdf.com/shop/gravity-pdf-for-wpml/
+ * Description:     Automatically translate Core and Universal PDFs using the WPML Gravity Forms translations. You can also control what language a PDF will use when generated in your admin area. There's a bunch of useful developer tools for building custom translatable templates, too!
  * Author:          Gravity PDF
  * Author URI:      https://gravitypdf.com
  * Text Domain:     gravity-pdf-for-wpml
@@ -98,11 +98,9 @@ class GpdfWpmlChecks {
 			return;
 		}
 
-		add_action(
-			'gfpdf_fully_loaded', function() {
-				require_once __DIR__ . '/src/bootstrap.php';
-			}
-		);
+		add_action( 'gfpdf_fully_loaded', function() {
+			require_once __DIR__ . '/src/bootstrap.php';
+		} );
 	}
 
 	/**
@@ -188,9 +186,7 @@ class GpdfWpmlChecks {
 }
 
 /* Initialise the software */
-add_action(
-	'plugins_loaded', function() {
-		$gravitypdf_wpml = new GpdfWpmlChecks();
-		$gravitypdf_wpml->init();
-	}
-);
+add_action( 'plugins_loaded', function() {
+	$gravitypdf_wpml = new GpdfWpmlChecks();
+	$gravitypdf_wpml->init();
+} );
