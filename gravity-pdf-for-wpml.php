@@ -65,7 +65,7 @@ class GpdfWpmlChecks {
 	 * @var string
 	 * @since 0.1
 	 */
-	private $required_gravitypdf_version = '4.4.0';
+	private $required_gravitypdf_version = '4.5.0';
 
 	/**
 	 * @var string
