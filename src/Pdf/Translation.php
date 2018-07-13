@@ -111,10 +111,8 @@ class Translation {
 	 * @since 0.1
 	 */
 	public function add_actions() {
-		/* @TODO - Add this action into core plugin (Controller_PDF) */
 		add_action( 'gfpdf_pre_view_or_download_pdf', [ $this, 'pre_pdf_view_or_download' ] );
 
-		/* @TODO - Add these actions into core plugin (Model_PDF, api.php) */
 		add_action( 'gfpdf_pre_generate_and_save_pdf_notification', [ $this, 'pre_pdf_generation_notification' ], 10, 4 );
 		add_action( 'gfpdf_pre_generate_and_save_pdf', [ $this, 'pre_pdf_generation' ], 10, 2 );
 

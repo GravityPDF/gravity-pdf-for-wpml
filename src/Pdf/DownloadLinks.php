@@ -136,8 +136,6 @@ class DownloadLinks {
 	 * @since 0.1
 	 */
 	public function get_pdf_url_for_language( $url, $pid, $entry_id ) {
-		/* @TODO include trailing slash fix in get_pdf_url() */
-
 		try {
 			$entry = $this->gf->get_entry( $entry_id );
 			$form  = $this->gf->get_form( $entry['form_id'] );
