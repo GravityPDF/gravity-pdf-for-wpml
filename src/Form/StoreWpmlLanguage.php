@@ -85,6 +85,7 @@ class StoreWpmlLanguage {
 	 */
 	public function init() {
 		$this->add_actions();
+		$this->add_filters();
 	}
 
 	/**
@@ -92,6 +93,13 @@ class StoreWpmlLanguage {
 	 */
 	public function add_actions() {
 		add_action( 'gform_entry_created', [ $this, 'save_language_code' ], 10, 1 );
+	}
+
+	/**
+	 * @since 0.1
+	 */
+	public function add_filters() {
+		add_filter( 'gform_entry_meta', [ $this, 'add_language_columns' ], 10 );
 	}
 
 	/**
@@ -105,5 +113,38 @@ class StoreWpmlLanguage {
 		$language_code = $this->wpml->get_current_site_language();
 		$this->gf->save_entry_language_code( $entry['id'], $language_code );
 		$this->logger->notice( sprintf( 'WPML language "%1$s" saved to Gravity Forms Entry "%2$s"', $entry['id'], $language_code ) );
+	}
+
+	/**
+	 * Register the Language Code meta data so it gets shown in the Entry List, can be searched and used in Confirmation/Notification/PDF Conditional Logic
+	 *
+	 * @param array $entry_meta
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 */
+	public function add_language_columns( $entry_meta ) {
+		$languages = $this->wpml->get_site_languages();
+		$choices   = [];
+
+		foreach ( $languages as $language ) {
+			$choices[] = [
+				'value' => $language['code'],
+				'text'  => $language['translated_name'] . " ({$language['code']})",
+			];
+		}
+
+		$entry_meta['wpml_language_code'] = [
+			'label'             => __( 'Language Code', 'gravity-pdf-for-wpml' ),
+			'is_numeric'        => false,
+			'is_default_column' => true,
+			'filter'            => [
+				'operators' => [ 'is', 'isnot' ],
+				'choices'   => $choices,
+			],
+		];
+
+		return $entry_meta;
 	}
 }
