@@ -2,6 +2,8 @@
 
 namespace GFPDF\Plugins\WPML\Form;
 
+use GFPDF\Plugins\WPML\Wpml\WpmlTesting;
+
 /**
  * @package     Gravity PDF for WPML
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
@@ -10,8 +12,6 @@ namespace GFPDF\Plugins\WPML\Form;
  */
 
 /* Exit if accessed directly */
-use GFPDF\Plugins\WPML\Wpml\WpmlTesting;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
