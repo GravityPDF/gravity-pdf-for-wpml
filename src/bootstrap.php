@@ -10,6 +10,7 @@ use GFPDF\Helper\Helper_Notices;
 
 use GFPDF\Plugins\WPML\Form\EditWpmlLanguageCode;
 use GFPDF\Plugins\WPML\Form\GravityForms;
+use GFPDF\Plugins\WPML\Form\MergeTags;
 use GFPDF\Plugins\WPML\Form\StoreWpmlLanguage;
 use GFPDF\Plugins\WPML\Options\GlobalSettings;
 use GFPDF\Plugins\WPML\Pdf\DownloadLinks;
@@ -87,6 +88,7 @@ class Bootstrap extends Helper_Abstract_Addon {
 				new EditWpmlLanguageCode( $wpml, $gf ),
 				new FormData( $gf ),
 				new GlobalSettings(),
+				new MergeTags( $wpml, $gf ),
 			]
 		);
 
