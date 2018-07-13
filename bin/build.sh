@@ -31,6 +31,7 @@ FILES=(
 "${PACKAGE_DIR}/package.json"
 "${PACKAGE_DIR}/yarn.lock"
 "${PACKAGE_DIR}/gulpfile.js"
+"${PACKAGE_DIR}/phpcs.xml"
 )
 
 for i in "${FILES[@]}"
