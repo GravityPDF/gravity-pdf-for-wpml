@@ -99,18 +99,8 @@ class MergeTags {
 	 */
 	public function add( $tags ) {
 		$tags [] = [
-			'tag'   => '{wpml:language_code}',
-			'label' => esc_html__( 'Entry Language Code', 'gravity-pdf-for-wpml' ),
-		];
-
-		$tags [] = [
-			'tag'   => '{wpml:language_name}',
-			'label' => esc_html__( 'Entry Language Name', 'gravity-pdf-for-wpml' ),
-		];
-
-		$tags [] = [
-			'tag'   => '{wpml:translated_language_name}',
-			'label' => esc_html__( 'Entry Translated Language Name', 'gravity-pdf-for-wpml' ),
+			'tag'   => '{wpml:current_language_code}',
+			'label' => esc_html__( 'Current Language Code', 'gravity-pdf-for-wpml' ),
 		];
 
 		return $tags;
@@ -134,15 +124,8 @@ class MergeTags {
 			return $text;
 		}
 
-		$languages = $this->wpml->get_site_languages();
-
-		$language_code            = $this->gf->get_entry_language_code( $entry['id'] );
-		$language_name            = isset( $languages[ $language_code ] ) ? $languages[ $language_code ]['native_name'] : '';
-		$translated_language_name = isset( $languages[ $language_code ] ) ? $languages[ $language_code ]['translated_name'] : '';
-
-		$text = str_replace( '{wpml:language_code}', $language_code, $text );
-		$text = str_replace( '{wpml:language_name}', $language_name, $text );
-		$text = str_replace( '{wpml:translated_language_name}', $translated_language_name, $text );
+		$text = str_replace( '{wpml:current_language_code}', $this->wpml->get_current_site_language(), $text );
+		$text = str_replace( '{wpml:entry_language_code}', $this->gf->get_entry_language_code( $entry['id'] ), $text );
 
 		return $text;
 	}

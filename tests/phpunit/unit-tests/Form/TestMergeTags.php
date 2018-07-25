@@ -93,9 +93,7 @@ class TestMergeTags extends \WP_UnitTestCase {
 	public function test_add_mergetags() {
 		$tags = $this->class->add( [] );
 
-		$this->assertEquals( '{wpml:language_code}', $tags[0]['tag'] );
-		$this->assertEquals( '{wpml:language_name}', $tags[1]['tag'] );
-		$this->assertEquals( '{wpml:translated_language_name}', $tags[2]['tag'] );
+		$this->assertEquals( '{wpml:current_language_code}', $tags[0]['tag'] );
 	}
 
 	/**
@@ -110,10 +108,18 @@ class TestMergeTags extends \WP_UnitTestCase {
 			]
 		);
 
-		$this->gf->save_entry_language_code( $entry_id, 'fr' );
+		/* Test current site language tags */
+		$this->wpml->set_site_language( 'es' );
+		$this->assertEquals( 'es', $this->class->process( '{wpml:current_language_code}', [], [ 'id' => $entry_id ] ) );
 
-		$this->assertEquals( 'fr', $this->class->process( '{wpml:language_code}', [], [ 'id' => $entry_id ] ) );
-		$this->assertEquals( 'Français', $this->class->process( '{wpml:language_name}', [], [ 'id' => $entry_id ] ) );
-		$this->assertEquals( 'French', $this->class->process( '{wpml:translated_language_name}', [], [ 'id' => $entry_id ] ) );
+		$this->wpml->set_site_language( 'en' );
+		$this->assertEquals( 'en', $this->class->process( '{wpml:current_language_code}', [], [ 'id' => $entry_id ] ) );
+
+		/* Test entry language code tags */
+		$this->gf->save_entry_language_code( $entry_id, 'fr' );
+		$this->assertEquals( 'fr', $this->class->process( '{wpml:entry_language_code}', [], [ 'id' => $entry_id ] ) );
+
+		$this->gf->save_entry_language_code( $entry_id, 'es' );
+		$this->assertEquals( 'es', $this->class->process( '{wpml:entry_language_code}', [], [ 'id' => $entry_id ] ) );
 	}
 }

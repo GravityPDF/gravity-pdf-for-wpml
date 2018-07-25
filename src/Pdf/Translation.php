@@ -77,13 +77,13 @@ class Translation {
 	protected $pdf;
 
 	/**
-	 * Holds the current entry language key for the PDF being generated
+	 * Holds the current PDF type being generated
 	 *
-	 * @var string
+	 * @var string One of: notification|api|view-download
 	 *
 	 * @since 0.1
 	 */
-	protected $current_language = '';
+	protected $pdf_type = '';
 
 	/**
 	 * Translation constructor.
@@ -139,6 +139,7 @@ class Translation {
 	 */
 	public function pre_pdf_generation( $form, $entry ) {
 		$this->pre_pdf_view_or_download( $entry['id'] );
+		$this->set_pdf_type( 'api' );
 	}
 
 	/**
@@ -169,9 +170,9 @@ class Translation {
 			$language_code = $this->wpml->get_default_site_language();
 		}
 
-		$this->set_language_code( $language_code );
+		$this->set_language_code( $language_code, 'view-download' );
 
-		$this->logger->notice( sprintf( 'Set PDF WPML Language to "%1$s" for Gravity Forms Entry "%2$s"', $this->current_language, '#' . $entry_id ) );
+		$this->logger->notice( sprintf( 'Set PDF WPML Language to "%1$s" for Gravity Forms Entry "%2$s"', $this->wpml->get_current_site_language(), '#' . $entry_id ) );
 	}
 
 	/**
@@ -199,9 +200,9 @@ class Translation {
 			$language_code = $this->wpml->get_default_site_language();
 		}
 
-		$this->set_language_code( $language_code );
+		$this->set_language_code( $language_code, 'notification' );
 
-		$this->logger->notice( sprintf( 'Set PDF WPML Language to "%1$s" for Gravity Forms Entry "%2$s"', $this->current_language, '#' . $entry['id'] ) );
+		$this->logger->notice( sprintf( 'Set PDF WPML Language to "%1$s" for Gravity Forms Entry "%2$s"', $this->wpml->get_current_site_language(), '#' . $entry['id'] ) );
 	}
 
 	/**
@@ -221,36 +222,27 @@ class Translation {
 	 * @return array
 	 */
 	public function translate_gravityform( $form ) {
-		if ( strlen( $this->current_language ) === 0 ) {
+		if ( strlen( $this->get_pdf_type() ) === 0 ) {
 			return $form;
 		}
 
-		$this->logger->notice( sprintf( 'Get Gravity Form "%1$s" in language "%2$s"', $form['id'] . ':' . $form['title'], $this->current_language ) );
+		$this->logger->notice( sprintf( 'Get Gravity Form "%1$s" in language "%2$s"', $form['id'] . ':' . $form['title'], $this->wpml->get_current_site_language() ) );
 
-		return $this->wpml->get_translated_gravityform( $form, $this->current_language );
+		return $this->wpml->get_translated_gravityform( $form, $this->wpml->get_current_site_language() );
 	}
 
 	/**
 	 * Set the current language code for the PDF being generated
 	 *
 	 * @param string $language_code The two-character language code
+	 * @param string $pdf_type      One of '', 'api', 'notification', 'view-download'
 	 *
 	 * @since 0.1
 	 */
-	public function set_language_code( $language_code ) {
+	public function set_language_code( $language_code, $pdf_type = '' ) {
 		$this->gf->flush_current_gravityform();
-		$this->current_language = $language_code;
-	}
-
-	/**
-	 * Get the current language code
-	 *
-	 * @return string
-	 *
-	 * @since 0.1
-	 */
-	public function get_language_code() {
-		return $this->current_language;
+		$this->wpml->set_site_language( $language_code );
+		$this->set_pdf_type( $pdf_type );
 	}
 
 	/**
@@ -259,6 +251,29 @@ class Translation {
 	 * @since 0.1
 	 */
 	public function reset_language_code() {
-		$this->set_language_code( '' );
+		$this->wpml->restore_site_language();
+		$this->pdf_type = $this->set_pdf_type( '' );
+	}
+
+	/**
+	 * Get the current PDF type
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function get_pdf_type() {
+		return $this->pdf_type;
+	}
+
+	/**
+	 * Sets the current PDF type being processed
+	 *
+	 * @param string $type One of '', 'api', 'notification', 'view-download'
+	 *
+	 * @since 0.1
+	 */
+	public function set_pdf_type( $type ) {
+		$this->pdf_type = $type;
 	}
 }
