@@ -130,7 +130,7 @@ class EditWpmlLanguageCode {
 
 		if ( $this->gf->get_page() !== 'entry_detail_edit' ) {
 			$this->add_language_selector_view( $language_code, $this->wpml->get_site_languages() );
-		} elseif ( strlen( $language_code ) > 0 ) {
+		} else {
 			try {
 				$this->add_language_selector_edit( $language_code, $this->wpml->get_gravityform_languages( $this->gf->get_form( $form_id ) ) );
 			} catch ( GpdfWpmlException $e ) {
@@ -241,6 +241,10 @@ class EditWpmlLanguageCode {
 		$native_lang     = isset( $languages[ $language_code ] ) ? $languages[ $language_code ]['native_name'] : $language_code;
 		$translated_lang = isset( $languages[ $language_code ] ) ? $languages[ $language_code ]['translated_name'] : $language_code;
 		$language        = ( $native_lang === $translated_lang ) ? $translated_lang : "$translated_lang ($native_lang)";
+
+		if ( empty( $language ) ) {
+			$language = __( 'N/A', 'gravity-pdf-for-wpml' );
+		}
 
 		include __DIR__ . '/markup/EntryLanguageView.php';
 	}
