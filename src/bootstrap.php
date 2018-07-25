@@ -18,6 +18,7 @@ use GFPDF\Plugins\WPML\Pdf\FormData;
 use GFPDF\Plugins\WPML\Pdf\Header;
 use GFPDF\Plugins\WPML\Pdf\Translation;
 use GFPDF\Plugins\WPML\Pdf\Pdf;
+use GFPDF\Plugins\WPML\Wpml\RegisterPdfTranslations;
 use GFPDF\Plugins\WPML\Wpml\Wpml;
 use GPDFAPI;
 
@@ -89,6 +90,7 @@ class Bootstrap extends Helper_Abstract_Addon {
 				new FormData( $gf ),
 				new GlobalSettings(),
 				new MergeTags( $wpml, $gf ),
+				new RegisterPdfTranslations(),
 			]
 		);
 
