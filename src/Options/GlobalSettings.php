@@ -71,7 +71,14 @@ class GlobalSettings {
 			'wpml_desc'                   => [
 				'id'    => 'wpml_desc',
 				'type'  => 'descriptive_text',
-				'desc'  => '<h4 class="section-title">' . esc_html__( 'Gravity PDF for WPML', 'gravity-pdf-for-wpml' ) . '</h4>',
+				'desc'  =>
+					'<h4 class="section-title">' . esc_html__( 'Gravity PDF for WPML', 'gravity-pdf-for-wpml' ) . '</h4><p>' .
+					sprintf(
+						esc_html__( 'PDFs will only be translated into the appropriate language if the PDF template is WPML-compatible AND the Gravity Form has been translated into that language. By default, all free Core templates and paid %1$sUniversal templates%3$s are WPML-compatible. %2$sDevelopers can read more about making templates compatible in the documentation%3$s.', 'gravity-pdf-for-wpml' ),
+						'<a href="https://gravitypdf.com/template-shop/#universal">',
+						'<a href="https://gravitypdf.com/documentation/v4/shop-plugin-gravity-pdf-for-wpml-add-on/#developer-template-compat">',
+						'</a>'
+					) . '</p>',
 				'class' => 'gfpdf-no-padding',
 			],
 
@@ -98,7 +105,7 @@ class GlobalSettings {
 					'entry-language'   => esc_html__( 'Entry', 'gravity-pdf-for-wpml' ),
 				],
 				'std'     => 'user-language',
-				'desc'    => 'PDFs will be translated into the appropriate language when viewed in the admin area if the PDF is WPML-compatible and the Gravity Form has been translated into that language.',
+				'desc'    => esc_html__( 'Set the default language used when viewing PDFs in the admin area.', 'gravity-pdf-for-wpml' ),
 				'tooltip' => '<h6>' . esc_html__( 'Default PDF Admin Language', 'gravity-pdf-for-wpml' ) . '</h6>' . sprintf( esc_html__( 'If %1$sCurrent User%2$s the PDF language will default to the active user\'s choice. If %1$sSite Default%2$s the WPML primary language will be used. If %1$sEntry%2$s the entry submitter language will be used.', 'gravity-pdf-for-wpml' ), '<code>', '</code>' ),
 			],
 		];
