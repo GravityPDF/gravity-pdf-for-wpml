@@ -161,7 +161,8 @@ class Translation {
 			}
 		} catch ( GpdfWpmlException $e ) {
 			$this->logger->error(
-				'PDF View / Download / API: ' . $e->getMessage(), [
+				'PDF View / Download / API: ' . $e->getMessage(),
+				[
 					'file' => $e->getFile(),
 					'line' => $e->getLine(),
 				]

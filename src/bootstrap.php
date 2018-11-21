@@ -80,7 +80,8 @@ class Bootstrap extends Helper_Abstract_Addon {
 		$pdf  = new Pdf( $gf );
 
 		$classes = array_merge(
-			$classes, [
+			$classes,
+			[
 				new Header(),
 				new DownloadLinks( $wpml, $gf, $pdf ),
 				new Translation( $wpml, $gf, $pdf ),
@@ -153,7 +154,8 @@ $name = 'Gravity PDF for WPML';
 $slug = 'gravity-pdf-for-wpml';
 
 $plugin = apply_filters(
-	'gfpdf_wpml_initialise', new Bootstrap(
+	'gfpdf_wpml_initialise',
+	new Bootstrap(
 		$slug,
 		$name,
 		'Gravity PDF',

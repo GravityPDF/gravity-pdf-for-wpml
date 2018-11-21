@@ -142,7 +142,8 @@ class DownloadLinks {
 			$pdf   = $this->pdf->get_pdf( $entry['form_id'], $pid );
 		} catch ( GpdfWpmlException $e ) {
 			$this->logger->error(
-				'PDF URL: ' . $e->getMessage(), [
+				'PDF URL: ' . $e->getMessage(),
+				[
 					'file' => $e->getFile(),
 					'line' => $e->getLine(),
 				]
@@ -213,7 +214,8 @@ class DownloadLinks {
 			$form = $this->gf->get_form( $form_id );
 		} catch ( GpdfWpmlException $e ) {
 			$this->logger->error(
-				'PDF Entry Details Links: ' . $e->getMessage(), [
+				'PDF Entry Details Links: ' . $e->getMessage(),
+				[
 					'file' => $e->getFile(),
 					'line' => $e->getLine(),
 				]
@@ -301,7 +303,8 @@ class DownloadLinks {
 			$active_pdfs = $this->pdf->get_active_pdfs( $entry['id'] );
 		} catch ( GpdfWpmlException $e ) {
 			$this->logger->error(
-				'PDF List: ' . $e->getMessage(), [
+				'PDF List: ' . $e->getMessage(),
+				[
 					'file' => $e->getFile(),
 					'line' => $e->getLine(),
 				]
@@ -327,7 +330,8 @@ class DownloadLinks {
 					];
 				} catch ( GpdfWpmlException $e ) {
 					$this->logger->error(
-						'PDF List Info: ' . $e->getMessage(), [
+						'PDF List Info: ' . $e->getMessage(),
+						[
 							'file' => $e->getFile(),
 							'line' => $e->getLine(),
 						]

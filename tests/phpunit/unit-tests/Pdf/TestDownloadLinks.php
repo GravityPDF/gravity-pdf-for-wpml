@@ -211,7 +211,8 @@ class TestDownloadLinks extends \WP_UnitTestCase {
 		$this->assertTrue( $this->class->is_template_wpml_compatible( [ 'group' => 'Core' ] ) );
 
 		add_filter(
-			'gfpdf_wpml_group_support', function( $groups ) {
+			'gfpdf_wpml_group_support',
+			function( $groups ) {
 				$groups[] = 'Other';
 
 				return $groups;

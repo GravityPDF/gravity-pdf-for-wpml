@@ -252,7 +252,8 @@ class Wpml implements WpmlInterface {
 				array_map(
 					function( $translation ) {
 							return $translation->translation_id;
-					}, $available_translations
+					},
+					$available_translations
 				)
 			)
 		);
