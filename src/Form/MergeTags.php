@@ -47,6 +47,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class MergeTags {
 
 	/**
+	 * Including Logging Support
+	 *
+	 * @since 0.1
+	 */
+	use Helper_Trait_Logger;
+
+	/**
 	 * @var WpmlInterface
 	 *
 	 * @since 0.1
@@ -86,6 +93,7 @@ class MergeTags {
 	public function add_filters() {
 		add_filter( 'gform_custom_merge_tags', [ $this, 'add' ], 10 );
 		add_filter( 'gform_replace_merge_tags', [ $this, 'process' ], 10, 3 );
+		add_filter( 'gfpdf_pdf_filename', [ $this, 'add_language_code_to_filename' ], 10, 4 );
 	}
 
 	/**
@@ -128,6 +136,30 @@ class MergeTags {
 		$text = str_replace( '{wpml:entry_language_code}', $this->gf->get_entry_language_code( $entry['id'] ), $text );
 
 		return $text;
+	}
+
+	/**
+	 * Automatically inject the language code in the PDF filename to prevent caching problems
+	 *
+	 * @param string $name
+	 * @param array  $form
+	 * @param array  $entry
+	 * @param array  $settings
+	 *
+	 * @return string
+	 *
+	 * @since 0.1
+	 */
+	public function add_language_code_to_filename( $name, $form, $entry, $settings ) {
+		$disable = apply_filters( 'gravitypdf_wpml_disable_auto_pdf_filename_language_code', false, $form, $entry, $settings );
+
+		if ( ! $disable && strpos( $settings['filename'], '{wpml:current_language_code}' ) === false ) {
+			$this->logger->notice( 'Current language code merge tag not found. Inject into PDF Filename.' );
+
+			$name = $this->process( $name . ' ({wpml:current_language_code})', $form, $entry );
+		}
+
+		return $name;
 	}
 
 }
