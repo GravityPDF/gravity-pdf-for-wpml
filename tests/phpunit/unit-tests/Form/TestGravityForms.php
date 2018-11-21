@@ -148,9 +148,11 @@ class TestGravityForms extends \WP_UnitTestCase {
 
 		$this->assertEquals( 'Sample WPML Form', $form_meta['title'] );
 
-		add_filter( 'gform_form_post_get_meta', function( $form ) {
-			return 'Fresh copy';
-		} );
+		add_filter(
+			'gform_form_post_get_meta', function( $form ) {
+				return 'Fresh copy';
+			}
+		);
 
 		/* Verify pulling from the cache */
 		$form_meta = \GFFormsModel::get_form_meta( $form_id );

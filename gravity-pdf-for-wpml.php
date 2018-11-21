@@ -98,9 +98,11 @@ class GpdfWpmlChecks {
 			return;
 		}
 
-		add_action( 'gfpdf_fully_loaded', function() {
-			require_once __DIR__ . '/src/bootstrap.php';
-		} );
+		add_action(
+			'gfpdf_fully_loaded', function() {
+				require_once __DIR__ . '/src/bootstrap.php';
+			}
+		);
 	}
 
 	/**
@@ -186,7 +188,9 @@ class GpdfWpmlChecks {
 }
 
 /* Initialise the software */
-add_action( 'plugins_loaded', function() {
-	$gravitypdf_wpml = new GpdfWpmlChecks();
-	$gravitypdf_wpml->init();
-} );
+add_action(
+	'plugins_loaded', function() {
+		$gravitypdf_wpml = new GpdfWpmlChecks();
+		$gravitypdf_wpml->init();
+	}
+);
