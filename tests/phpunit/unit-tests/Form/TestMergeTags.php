@@ -10,6 +10,7 @@ namespace GFPDF\Plugins\WPML\Form;
  */
 
 /* Exit if accessed directly */
+
 use GFPDF\Plugins\WPML\Wpml\WpmlTesting;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -78,6 +79,10 @@ class TestMergeTags extends \WP_UnitTestCase {
 
 		$this->class = new MergeTags( $this->wpml, $this->gf );
 		$this->class->init();
+
+		$log = new \Monolog\Logger( 'test' );
+		$log->pushHandler( new \Monolog\Handler\NullHandler( \Monolog\Logger::INFO ) );
+		$this->class->set_logger( $log );
 	}
 
 	/**
@@ -121,5 +126,27 @@ class TestMergeTags extends \WP_UnitTestCase {
 
 		$this->gf->save_entry_language_code( $entry_id, 'es' );
 		$this->assertEquals( 'es', $this->class->process( '{wpml:entry_language_code}', [], [ 'id' => $entry_id ] ) );
+	}
+
+	/**
+	 * @since 0.1
+	 */
+	public function test_add_language_code_to_filename() {
+		$form     = \GFAPI::get_form( $this->create_form() );
+		$entry_id = \GFAPI::add_entry(
+			[
+				'form_id' => $form['id'],
+				13        => 'My Field Data',
+			]
+		);
+		$entry    = \GFAPI::get_entry( $entry_id );
+
+		$this->assertEquals( 'Name (en)', $this->class->add_language_code_to_filename( 'Name', $form, $entry, [ 'filename' => '' ] ) );
+
+		$this->assertEquals( 'Name', $this->class->add_language_code_to_filename( 'Name', $form, $entry, [ 'filename' => 'Name_{wpml:current_language_code}' ] ) );
+
+		add_filter( 'gravitypdf_wpml_disable_auto_pdf_filename_language_code', '__return_true' );
+
+		$this->assertEquals( 'Name', $this->class->add_language_code_to_filename( 'Name', $form, $entry, [ 'filename' => '' ] ) );
 	}
 }
