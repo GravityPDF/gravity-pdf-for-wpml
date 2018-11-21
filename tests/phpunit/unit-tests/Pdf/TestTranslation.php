@@ -102,45 +102,43 @@ class TestTranslation extends \WP_UnitTestCase {
 			]
 		);
 
+		/* Test the current site language for French */
 		$this->wpml->set_site_language( 'fr' );
-
 		$this->class->pre_pdf_view_or_download( $entry_id );
-		$this->assertEquals( 'fr', $this->class->get_language_code() );
+		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
+		$this->assertEquals( 'view-download', $this->class->get_pdf_type() );
 
-		$this->class->reset_language_code();
-
+		$this->wpml->set_site_language( 'fr' );
 		$this->class->pre_pdf_generation( [], [ 'id' => $entry_id ] );
-		$this->assertEquals( 'fr', $this->class->get_language_code() );
+		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
+		$this->assertEquals( 'api', $this->class->get_pdf_type() );
+
+		/* Test the current site language for Spanish */
+		$this->wpml->set_site_language( 'es' );
+		$this->class->pre_pdf_view_or_download( $entry_id );
+		$this->assertEquals( 'es', $this->wpml->get_current_site_language() );
 
 		$this->wpml->set_site_language( 'es' );
-
-		$this->class->pre_pdf_view_or_download( $entry_id );
-		$this->assertEquals( 'es', $this->class->get_language_code() );
-
-		$this->class->reset_language_code();
-
 		$this->class->pre_pdf_generation( [], [ 'id' => $entry_id ] );
-		$this->assertEquals( 'es', $this->class->get_language_code() );
+		$this->assertEquals( 'es', $this->wpml->get_current_site_language() );
+
+		/* Test that we fallback to the default site language when a language isn't found */
+		$this->wpml->set_site_language( 'hi' );
+		$this->class->pre_pdf_view_or_download( $entry_id );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 
 		$this->wpml->set_site_language( 'hi' );
-
-		$this->class->pre_pdf_view_or_download( $entry_id );
-		$this->assertEquals( 'en', $this->class->get_language_code() );
-
-		$this->class->reset_language_code();
-
 		$this->class->pre_pdf_generation( [], [ 'id' => $entry_id ] );
-		$this->assertEquals( 'en', $this->class->get_language_code() );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
+
+		/* Test the default language English */
+		$this->wpml->set_site_language( 'en' );
+		$this->class->pre_pdf_view_or_download( $entry_id );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 
 		$this->wpml->set_site_language( 'en' );
-
-		$this->class->pre_pdf_view_or_download( $entry_id );
-		$this->assertEquals( 'en', $this->class->get_language_code() );
-
-		$this->class->reset_language_code();
-
 		$this->class->pre_pdf_generation( [], [ 'id' => $entry_id ] );
-		$this->assertEquals( 'en', $this->class->get_language_code() );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 	}
 
 	public function test_pre_pdf_generation_notification() {
@@ -158,20 +156,21 @@ class TestTranslation extends \WP_UnitTestCase {
 		$this->gf->save_entry_language_code( $entry_id, 'fr' );
 
 		$this->class->pre_pdf_generation_notification( $form, $entry, [], [ 'toType' => 'field' ] );
-		$this->assertEquals( 'fr', $this->class->get_language_code() );
+		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
+		$this->assertEquals( 'notification', $this->class->get_pdf_type() );
 
 		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
-		$this->assertEquals( 'en', $this->class->get_language_code() );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 
 		/* Disable the User Notification only option and re-test */
 		\GPDFAPI::update_plugin_option( 'wpml_user_notification', 'Off' );
 
 		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
-		$this->assertEquals( 'fr', $this->class->get_language_code() );
+		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
 
 		$this->gf->save_entry_language_code( $entry_id, 'hi' );
 		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
-		$this->assertEquals( 'en', $this->class->get_language_code() );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 	}
 
 	public function test_translate_gravityform() {
@@ -183,16 +182,16 @@ class TestTranslation extends \WP_UnitTestCase {
 		$new_form = $this->class->translate_gravityform( $form );
 		$this->assertSame( $form, $new_form );
 
-		$this->class->set_language_code( 'es' );
+		$this->class->set_language_code( 'es', 'api' );
 		$new_form = $this->class->translate_gravityform( $form );
 		$this->assertEquals( 'My Form (es)', $new_form['title'] );
 	}
 
 	public function test_post_pdf_generation() {
-		$this->class->set_language_code( 'fr' );
-		$this->assertEquals( 'fr', $this->class->get_language_code() );
+		$this->class->set_language_code( 'fr', 'api' );
+		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
 
 		$this->class->post_pdf_generation();
-		$this->assertEquals( '', $this->class->get_language_code() );
+		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 	}
 }

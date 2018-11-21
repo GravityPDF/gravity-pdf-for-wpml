@@ -91,7 +91,7 @@ class GlobalSettings {
 					'On'  => esc_html__( 'On', 'gravity-pdf-for-wpml' ),
 					'Off' => esc_html__( 'Off', 'gravity-pdf-for-wpml' ),
 				],
-				'std'     => 'On',
+				'std'     => 'Off',
 				'tooltip' => '<h6>' . esc_html__( 'Only Translate User Notification PDFs', 'gravity-pdf-for-wpml' ) . '</h6>' . sprintf( esc_html__( 'When on, only Notifications that have the %1$sSend To%2$s setting set to %1$sSelect a Field%2$s will have PDFs translated. When off, PDFs attached to all Notifications will be translated.', 'gravity-pdf-for-wpml' ), '<code>', '</code>' ),
 			],
 

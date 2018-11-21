@@ -203,7 +203,6 @@ class Wpml implements WpmlInterface {
 	public function get_translated_gravityform( $form, $language_code ) {
 		$this->set_site_language( $language_code );
 		$translated_form = apply_filters( 'gform_pre_render', $form, false, [] );
-		$this->restore_site_language();
 
 		return $translated_form;
 	}
@@ -242,7 +241,7 @@ class Wpml implements WpmlInterface {
 		 * Prepare a single SQL statement to get the translation status from WPML
 		 *
 		 * Disabled SQL code-sniff check because we're dynamically populating the placeholders
-		 * phpcs:disable WordPress.WP.PreparedSQL.NotPrepared
+		 * phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
 		 */
 		$placeholder = implode( ', ', array_fill( 0, count( $available_translations ), '%d' ) );
 		$sql         = "SELECT translation_id, status FROM {$wpdb->prefix}icl_translation_status WHERE translation_id IN ($placeholder)";
