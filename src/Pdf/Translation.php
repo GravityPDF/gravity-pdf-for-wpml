@@ -189,12 +189,7 @@ class Translation {
 	public function pre_pdf_generation_notification( $form, $entry, $settings, $notification ) {
 
 		/* Check if we should translate the PDFs for the current notification */
-		$translate_user_notifications = $this->pdf->get_option( 'wpml_user_notification', 'On' );
-		if ( $translate_user_notifications === 'On' && ( ! isset( $notification['toType'] ) || $notification['toType'] !== 'field' ) ) {
-			$language_code = $this->wpml->get_default_site_language();
-		} else {
-			$language_code = $this->gf->get_entry_language_code( $entry['id'] );
-		}
+		$language_code = ( ! empty( $settings['wpml_disable_translation'] ) ) ? $this->wpml->get_default_site_language() : $this->gf->get_entry_language_code( $entry['id'] );
 
 		/* If we cant find the translated Gravity Form, use the default site language */
 		if ( ! $this->wpml->has_translated_gravityform( $form, $language_code ) ) {

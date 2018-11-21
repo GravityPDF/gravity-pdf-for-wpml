@@ -37,11 +37,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 */
 
 /**
- * Class GlobalSettings
+ * Class Settings
  *
  * @package GFPDF\Plugins\WPML\Options
  */
-class GlobalSettings {
+class Settings {
 
 	/**
 	 * @since 0.1
@@ -55,6 +55,30 @@ class GlobalSettings {
 	 */
 	public function add_filters() {
 		add_filter( 'gfpdf_settings_extensions', [ $this, 'add_global_settings' ] );
+		add_filter( 'gfpdf_form_settings', [ $this, 'add_general_pdf_settings' ] );
+	}
+
+	/**
+	 * Add PDF setting to General tab
+	 *
+	 * @param array $settings
+	 *
+	 * @return array
+	 *
+	 * @since 0.1
+	 */
+	public function add_general_pdf_settings( $settings ) {
+		$translation_field = [
+			'wpml_disable_translation' => [
+				'id'      => 'wpml_disable_translation',
+				'name'    => esc_html__( 'WPML', 'gravity-forms-pdf-extended' ),
+				'type'    => 'checkbox',
+				'desc'    => esc_html__( 'Disable PDF translation when attached to selected Notifications', 'gravity-forms-pdf-extended' ),
+				'tooltip' => '<h6>' . esc_html__( 'Disable PDF Translation', 'gravity-pdf-for-wpml' ) . '</h6>' . esc_html__( 'When ticked, the PDF will not be translated for the selected Notifications (below). When unticked, the PDF will be translated in the user-submitted language for the selected Notifications, but only if the template is WPML-compatible.', 'gravity-pdf-for-wpml' ),
+			],
+		];
+
+		return $this->array_insert_after( $settings, 'template', $translation_field );
 	}
 
 	/**
@@ -74,25 +98,11 @@ class GlobalSettings {
 				'desc'  =>
 					'<h4 class="section-title">' . esc_html__( 'Gravity PDF for WPML', 'gravity-pdf-for-wpml' ) . '</h4><p>' .
 					sprintf(
-						esc_html__( 'PDFs will only be translated into the appropriate language if the PDF template is WPML-compatible AND the Gravity Form has been translated into that language. By default, all free Core templates and paid %1$sUniversal templates%3$s are WPML-compatible. %2$sDevelopers can read more about making templates compatible in the documentation%3$s.', 'gravity-pdf-for-wpml' ),
-						'<a href="https://gravitypdf.com/template-shop/#universal">',
-						'<a href="https://gravitypdf.com/documentation/v4/shop-plugin-gravity-pdf-for-wpml-add-on/#developer-template-compat">',
+						esc_html__( 'PDFs will only be translated into the appropriate language if the PDF template is WPML-compatible and the Gravity Form has been translated into that language. By default, all free Core templates and paid %1$sUniversal templates%2$s are WPML-compatible.', 'gravity-pdf-for-wpml' ),
+						'<a href="https://gravitypdf.com/store/#universal">',
 						'</a>'
 					) . '</p>',
 				'class' => 'gfpdf-no-padding',
-			],
-
-			'wpml_user_notification'      => [
-				'id'      => 'wpml_user_notification',
-				'name'    => esc_html__( 'Only Translate User Notification PDFs', 'gravity-pdf-for-wpml' ),
-				'type'    => 'radio',
-				'desc'    => esc_html__( 'When on, PDFs will only be translated for Notifications that are sent to a Gravity Forms Email field.', 'gravity-pdf-for-wpml' ),
-				'options' => [
-					'On'  => esc_html__( 'On', 'gravity-pdf-for-wpml' ),
-					'Off' => esc_html__( 'Off', 'gravity-pdf-for-wpml' ),
-				],
-				'std'     => 'Off',
-				'tooltip' => '<h6>' . esc_html__( 'Only Translate User Notification PDFs', 'gravity-pdf-for-wpml' ) . '</h6>' . sprintf( esc_html__( 'When on, only Notifications that have the %1$sSend To%2$s setting set to %1$sSelect a Field%2$s will have PDFs translated. When off, PDFs attached to all Notifications will be translated.', 'gravity-pdf-for-wpml' ), '<code>', '</code>' ),
 			],
 
 			'wpml_admin_default_language' => [
@@ -106,11 +116,27 @@ class GlobalSettings {
 				],
 				'std'     => 'user-language',
 				'desc'    => esc_html__( 'Set the default language used when viewing PDFs in the admin area.', 'gravity-pdf-for-wpml' ),
-				'tooltip' => '<h6>' . esc_html__( 'Default PDF Admin Language', 'gravity-pdf-for-wpml' ) . '</h6>' . sprintf( esc_html__( 'If %1$sCurrent User%2$s the PDF language will default to the active user\'s choice. If %1$sSite Default%2$s the WPML primary language will be used. If %1$sEntry%2$s the entry submitter language will be used.', 'gravity-pdf-for-wpml' ), '<code>', '</code>' ),
+				'tooltip' => '<h6>' . esc_html__( 'Default PDF Admin Language', 'gravity-pdf-for-wpml' ) . '</h6>' . sprintf( esc_html__( 'When the option %1$sCurrent User%2$s is selected, the PDF language will default to the active user\'s choice. When %1$sSite Default%2$s, the WPML primary language will be used. And if %1$sEntry%2$s, the entry submitter language will be used.', 'gravity-pdf-for-wpml' ), '<code>', '</code>' ),
 			],
 		];
 
 		return array_merge( $settings, $wpml_settings );
 	}
 
+	/**
+	 * Insert a value or key/value pair after a specific key in an array.  If key doesn't exist, value is appended
+	 * to the end of the array.
+	 *
+	 * @param array  $array
+	 * @param string $key
+	 * @param array  $new
+	 *
+	 * @return array
+	 */
+	function array_insert_after( array $array, $key, array $new ) {
+		$keys  = array_keys( $array );
+		$index = array_search( $key, $keys );
+		$pos   = false === $index ? count( $array ) : $index + 1;
+		return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) );
+	}
 }

@@ -155,19 +155,15 @@ class TestTranslation extends \WP_UnitTestCase {
 		/* Test the set language code with the defaults */
 		$this->gf->save_entry_language_code( $entry_id, 'fr' );
 
-		$this->class->pre_pdf_generation_notification( $form, $entry, [], [ 'toType' => 'field' ] );
+		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
 		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
 		$this->assertEquals( 'notification', $this->class->get_pdf_type() );
 
-		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
+		/* Disable the PDF translation for the notification */
+		$this->class->pre_pdf_generation_notification( $form, $entry, [ 'wpml_disable_translation' => 1 ], [] );
 		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );
 
-		/* Disable the User Notification only option and re-test */
-		\GPDFAPI::update_plugin_option( 'wpml_user_notification', 'Off' );
-
-		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
-		$this->assertEquals( 'fr', $this->wpml->get_current_site_language() );
-
+		/* Test the fallback language when language code doesn't exist */
 		$this->gf->save_entry_language_code( $entry_id, 'hi' );
 		$this->class->pre_pdf_generation_notification( $form, $entry, [], [] );
 		$this->assertEquals( 'en', $this->wpml->get_current_site_language() );

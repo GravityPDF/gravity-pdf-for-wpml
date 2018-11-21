@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @package GFPDF\Plugins\WPML\Options
  */
-class TestGlobalSettings extends \WP_UnitTestCase {
+class TestSettings extends \WP_UnitTestCase {
 
 	/**
 	 * @var GlobalSettings
@@ -57,14 +57,19 @@ class TestGlobalSettings extends \WP_UnitTestCase {
 
 		parent::setUp();
 
-		$this->class = new GlobalSettings();
+		$this->class = new Settings();
 		$this->class->init();
+	}
+
+	public function test_add_settings() {
+		$settings = apply_filters( 'gfpdf_form_settings', [] );
+
+		$this->assertArrayHasKey( 'wpml_disable_translation', $settings );
 	}
 
 	public function test_add_global_settings() {
 		$settings = apply_filters( 'gfpdf_settings_extensions', [] );
 
-		$this->assertArrayHasKey( 'wpml_user_notification', $settings );
 		$this->assertArrayHasKey( 'wpml_admin_default_language', $settings );
 	}
 }
