@@ -98,7 +98,7 @@ class Settings {
 				'desc'  =>
 					'<h4 class="section-title">' . esc_html__( 'Gravity PDF for WPML', 'gravity-pdf-for-wpml' ) . '</h4><p>' .
 					sprintf(
-						esc_html__( 'PDFs will only be translated into the appropriate language if the PDF template is WPML-compatible and the Gravity Form has been translated into that language. By default, all free Core templates and paid %1$sUniversal templates%2$s are WPML-compatible.', 'gravity-pdf-for-wpml' ),
+						esc_html__( 'PDFs will only be translated into the appropriate language if the PDF template is WPML-compatible and the form has been translated. By default, all free Core templates and paid %1$sUniversal templates%2$s are WPML-compatible.', 'gravity-pdf-for-wpml' ),
 						'<a href="https://gravitypdf.com/store/#universal">',
 						'</a>'
 					) . '</p>',
