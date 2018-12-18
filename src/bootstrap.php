@@ -88,7 +88,7 @@ class Bootstrap extends Helper_Abstract_Addon {
 				new StoreWpmlLanguage( $wpml, $gf ),
 				new EditWpmlLanguageCode( $wpml, $gf ),
 				new FormData( $gf ),
-				new Settings(),
+				new Settings( $pdf ),
 				new MergeTags( $wpml, $gf ),
 			]
 		);

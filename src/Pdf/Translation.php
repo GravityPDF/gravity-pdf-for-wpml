@@ -111,7 +111,7 @@ class Translation {
 	 * @since 0.1
 	 */
 	public function add_actions() {
-		add_action( 'gfpdf_pre_view_or_download_pdf', [ $this, 'pre_pdf_view_or_download' ] );
+		add_action( 'gfpdf_pre_view_or_download_pdf', [ $this, 'pre_pdf_view_or_download' ], 10, 2 );
 
 		add_action( 'gfpdf_pre_generate_and_save_pdf_notification', [ $this, 'pre_pdf_generation_notification' ], 10, 4 );
 		add_action( 'gfpdf_pre_generate_and_save_pdf', [ $this, 'pre_pdf_generation' ], 10, 2 );
@@ -149,12 +149,13 @@ class Translation {
 	 *
 	 * @since 0.1
 	 */
-	public function pre_pdf_view_or_download( $entry_id ) {
-		$language_code = $this->wpml->get_current_site_language();
-
+	public function pre_pdf_view_or_download( $entry_id, $pdf_id ) {
 		try {
 			$entry = $this->gf->get_entry( $entry_id );
 			$form  = $this->gf->get_form( $entry['form_id'] );
+
+			$settings = $this->pdf->get_pdf( $form['id'], $pdf_id );
+			$language_code = ! empty( $settings['wpml_enable_translation'] ) ? $this->wpml->get_current_site_language() : $this->wpml->get_default_site_language();
 
 			if ( ! $this->wpml->has_translated_gravityform( $form, $language_code ) ) {
 				throw new GpdfWpmlException( sprintf( 'Could not find Gravity Form translation for "%s"', $language_code ) );
@@ -189,7 +190,7 @@ class Translation {
 	public function pre_pdf_generation_notification( $form, $entry, $settings, $notification ) {
 
 		/* Check if we should translate the PDFs for the current notification */
-		$language_code = ( ! empty( $settings['wpml_disable_translation'] ) ) ? $this->wpml->get_default_site_language() : $this->gf->get_entry_language_code( $entry['id'] );
+		$language_code = ! empty( $settings['wpml_enable_translation'] ) ? $this->gf->get_entry_language_code( $entry['id'] ) : $this->wpml->get_default_site_language();
 
 		/* If we cant find the translated Gravity Form, use the default site language */
 		if ( ! $this->wpml->has_translated_gravityform( $form, $language_code ) ) {

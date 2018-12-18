@@ -159,7 +159,7 @@ class DownloadLinks {
 		}
 
 		/* Translate the URL if the template is WPML-compatible */
-		if ( $this->is_template_wpml_compatible( $pdf ) ) {
+		if ( $this->pdf->is_template_wpml_compatible( $pdf ) ) {
 
 			/* Determine the language type to use based on the global PDF setting */
 			$language_code = $this->get_language_code( $entry['id'] );
@@ -256,7 +256,7 @@ class DownloadLinks {
 		foreach ( $pdf_list as &$pdf ) {
 			$pdf['languages'] = [];
 
-			if ( ! $this->is_template_wpml_compatible( $pdf ) ) {
+			if ( ! $this->pdf->is_template_wpml_compatible( $pdf ) ) {
 				continue;
 			}
 
@@ -346,34 +346,6 @@ class DownloadLinks {
 		$this->pdf_list_cache[ $cache_id ] = $pdf_list;
 
 		return $pdf_list;
-	}
-
-	/**
-	 * Checks if the current PDF template is WPML compatible
-	 *
-	 * @param array $pdf The PDF Settings
-	 *
-	 * @return bool
-	 *
-	 * @Internal Either the template specifically includes the `@WPML: true` header, or is apart of the Core/Universal templates
-	 *
-	 * @since    0.1
-	 */
-	public function is_template_wpml_compatible( $pdf ) {
-		/* Check if has the `@WPML: true` header */
-		if ( isset( $pdf['wpml'] ) && $pdf['wpml'] === 'true' ) {
-			return true;
-		}
-
-		/* Check if group is Core/Universal which has WPML support out of the box */
-		if ( isset( $pdf['group'] ) ) {
-			$supported_template_groups = apply_filters( 'gfpdf_wpml_group_support', [ 'Core', 'Universal (Premium)' ], $pdf );
-			if ( in_array( $pdf['group'], $supported_template_groups, true ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**

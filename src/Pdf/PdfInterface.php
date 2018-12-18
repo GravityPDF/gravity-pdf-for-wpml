@@ -133,4 +133,15 @@ interface PdfInterface {
 	 * @since 0.1
 	 */
 	public function remove_filter( $filter_name, $class_name, $method_name, $priority = 10 );
+
+	/**
+	 * Checks if the current PDF template is WPML compatible
+	 *
+	 * @param array $pdf The PDF Settings
+	 *
+	 * @return bool
+	 *
+	 * @since    0.1
+	 */
+	public function is_template_wpml_compatible( $pdf );
 }

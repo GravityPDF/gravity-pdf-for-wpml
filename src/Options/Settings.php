@@ -2,6 +2,8 @@
 
 namespace GFPDF\Plugins\WPML\Options;
 
+use GFPDF\Plugins\WPML\Pdf\PdfInterface;
+
 /**
  * Handles the plugins global PDF Settings
  *
@@ -44,6 +46,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Settings {
 
 	/**
+	 * @var PdfInterface
+	 *
+	 * @since 0.1
+	 */
+	protected $pdf;
+
+	/**
+	 * Settings constructor.
+	 *
+	 * @param PdfInterface $pdf
+	 *
+	 * @since 0.1
+	 */
+	public function __construct( PdfInterface $pdf ) {
+		$this->pdf = $pdf;
+	}
+
+	/**
 	 * @since 0.1
 	 */
 	public function init() {
@@ -55,11 +75,11 @@ class Settings {
 	 */
 	public function add_filters() {
 		add_filter( 'gfpdf_settings_extensions', [ $this, 'add_global_settings' ] );
-		add_filter( 'gfpdf_form_settings', [ $this, 'add_general_pdf_settings' ] );
+		add_filter( 'gfpdf_form_settings_custom_appearance', [ $this, 'add_pdf_settings' ], 200 );
 	}
 
 	/**
-	 * Add PDF setting to General tab
+	 * Add PDF setting to Template tab
 	 *
 	 * @param array $settings
 	 *
@@ -67,18 +87,24 @@ class Settings {
 	 *
 	 * @since 0.1
 	 */
-	public function add_general_pdf_settings( $settings ) {
-		$translation_field = [
-			'wpml_disable_translation' => [
-				'id'      => 'wpml_disable_translation',
+	public function add_pdf_settings( $settings ) {
+
+		$template = isset( $_POST['template'] ) ? $_POST['template'] : $this->get_template_name_from_current_page();
+		$pdf      = $this->pdf->get_template_info_by_id( $template );
+
+		if ( $this->pdf->is_template_wpml_compatible( $pdf ) ) {
+			$translation_field = [
+				'id'      => 'wpml_enable_translation',
 				'name'    => esc_html__( 'WPML', 'gravity-forms-pdf-extended' ),
 				'type'    => 'checkbox',
-				'desc'    => esc_html__( 'Disable PDF translation when attached to selected Notifications', 'gravity-forms-pdf-extended' ),
-				'tooltip' => '<h6>' . esc_html__( 'Disable PDF Translation', 'gravity-pdf-for-wpml' ) . '</h6>' . esc_html__( 'When ticked, the PDF will not be translated for the selected Notifications (below). When unticked, the PDF will be translated in the user-submitted language for the selected Notifications, but only if the template is WPML-compatible.', 'gravity-pdf-for-wpml' ),
-			],
-		];
+				'desc'    => esc_html__( 'Enable automatic PDF translation with WPML?', 'gravity-forms-pdf-extended' ),
+				'tooltip' => '<h6>' . esc_html__( 'WPML PDF Translation', 'gravity-pdf-for-wpml' ) . '</h6>' . esc_html__( 'When enabled, the PDF will be automatically translated when viewed, sent via email, or generated via the API.', 'gravity-pdf-for-wpml' ),
+			];
 
-		return $this->array_insert_after( $settings, 'template', $translation_field );
+			return $this->array_unshift_assoc( $settings, 'wpml_enable_translation', $translation_field );
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -92,7 +118,7 @@ class Settings {
 	 */
 	public function add_global_settings( $settings ) {
 		$wpml_settings = [
-			'wpml_desc'                   => [
+			'wpml_desc' => [
 				'id'    => 'wpml_desc',
 				'type'  => 'descriptive_text',
 				'desc'  =>
@@ -124,19 +150,26 @@ class Settings {
 	}
 
 	/**
-	 * Insert a value or key/value pair after a specific key in an array.  If key doesn't exist, value is appended
-	 * to the end of the array.
+	 * Insert a value or key/value pair at the beginning of the array
 	 *
 	 * @param array  $array
 	 * @param string $key
-	 * @param array  $new
+	 * @param mixed  $val
 	 *
 	 * @return array
 	 */
-	function array_insert_after( array $array, $key, array $new ) {
-		$keys  = array_keys( $array );
-		$index = array_search( $key, $keys );
-		$pos   = false === $index ? count( $array ) : $index + 1;
-		return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) );
+	protected function array_unshift_assoc( &$array, $key, $val ) {
+		$array         = array_reverse( $array, true );
+		$array[ $key ] = $val;
+		return array_reverse( $array, true );
+	}
+
+	/**
+	 * @return string
+	 * @since 0.1
+	 */
+	protected function get_template_name_from_current_page() {
+		$model = \GPDFAPI::get_mvc_class( 'Model_Form_Settings' );
+		return $model->get_template_name_from_current_page();
 	}
 }
